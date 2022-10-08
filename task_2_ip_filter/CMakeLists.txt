@@ -7,7 +7,7 @@ option(WITH_BOOST_TEST "Whether to build Boost test" ON)
 add_executable(${PROJECT_NAME} src/main.cpp)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 14
+    CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
 )
 
