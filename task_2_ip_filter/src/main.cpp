@@ -1,62 +1,13 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <vector>
 
-#include "ip_address.hpp"
-
-
-std::string BuildInvalidAddressMessage(const std::string& address_str, size_t line_num) {
-    std::stringstream ss{};
-    ss << "Invalid IP address representation "
-       << '\'' << address_str << '\''
-       << " on line " << line_num;
-    return ss.str();
-}
-
-std::vector<std::string> SplitString(const std::string& str, char delimiter) {
-    std::vector<std::string> result{};
-    auto begin_it = str.begin();
-    auto end_it = begin_it;
-    for (;;) {
-        end_it = std::find(end_it, str.end(), delimiter);
-        result.emplace_back(begin_it, end_it);
-        if (end_it == str.end()) {
-            break;
-        }
-        begin_it = ++end_it;
-    }
-    return result;
-}
-
-std::vector<ip::Address> ParseAddresses() {
-    std::vector<ip::Address> result{};
-    size_t line_counter = 0;
-    for (std::string current_line{};
-         std::getline(std::cin, current_line) && !current_line.empty();
-         line_counter++) {
-        const auto text_fields = SplitString(current_line, '\t');
-        const auto& address_str = text_fields.at(0);
-        const auto address_fields = SplitString(address_str, '.');
-        if (address_fields.size() != ip::kAddressSize) {
-            throw std::runtime_error(BuildInvalidAddressMessage(address_str, line_counter));
-        }
-        ip::Address address{};
-        for (size_t i = 0; i < ip::kAddressSize; i++) {
-            try {
-                address[i] = static_cast<ip::AddressByteT>(std::stoi(address_fields[i]));
-            } catch (const std::logic_error& ex) {
-                throw std::runtime_error(BuildInvalidAddressMessage(address_str, line_counter));
-            }
-        }
-        result.push_back(std::move(address));
-    }
-    return result;
-}
+#include <ip_address.hpp>
+#include <parser.hpp>
 
 int main() {
-    auto addresses = ParseAddresses();
+    auto addresses = parser::ParseAddresses(std::cin);
 
     // sort with descending order
     std::sort(addresses.begin(), addresses.end(),
