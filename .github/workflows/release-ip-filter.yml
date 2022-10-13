@@ -19,6 +19,9 @@ jobs:
     - name: make build
       working-directory: ./task_2_ip_filter
       run: cmake --build .
+    - name: run tests
+      working-directory: ./task_2_ip_filter
+      run: cmake --build . --target test_ip_filter
     - name: build package
       working-directory: ./task_2_ip_filter
       run: cmake --build . --target package
