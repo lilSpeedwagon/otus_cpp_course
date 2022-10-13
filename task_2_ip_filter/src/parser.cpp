@@ -1,5 +1,6 @@
 #include "parser.hpp"
 
+#include <climits>
 #include <sstream>
 #include <vector>
 
@@ -20,7 +21,7 @@ ip::Address ParseAddress(const std::string& address_str) {
         } catch (const std::logic_error&) {
             throw std::runtime_error("invalid address byte format");
         }
-        if (byte_data > CHAR_MAX) {
+        if (byte_data > UCHAR_MAX) {
             throw std::runtime_error("address byte overflow");
         }
         address[i] = static_cast<ip::AddressByteT>(byte_data);
