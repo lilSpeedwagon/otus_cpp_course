@@ -13,9 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: install boost
+      run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
     - name: cmake configure
       working-directory: ./task_2_ip_filter
-      run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+      run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON
     - name: make build
       working-directory: ./task_2_ip_filter
       run: cmake --build .
