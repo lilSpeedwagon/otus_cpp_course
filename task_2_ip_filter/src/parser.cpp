@@ -31,7 +31,7 @@ ip::Address ParseAddress(const std::string& address_str) {
 
 std::vector<ip::Address> ParseAddresses(std::istream& stream) {
     std::vector<ip::Address> result{};
-    size_t line_counter = 0;
+    size_t line_counter = 1;
     for (std::string current_line{};
          std::getline(stream, current_line) && !current_line.empty();
          line_counter++) {
