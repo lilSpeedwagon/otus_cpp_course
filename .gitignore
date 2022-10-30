@@ -90,3 +90,6 @@ _deps
 *.su
 *.idb
 *.pdb
+
+# build files
+build

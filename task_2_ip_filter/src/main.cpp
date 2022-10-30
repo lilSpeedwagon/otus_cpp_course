@@ -3,45 +3,13 @@
 #include <string>
 #include <vector>
 
-#include "ip_address.hpp"
-
-
-std::vector<std::string> SplitString(const std::string& str, char delimiter) {
-    std::vector<std::string> result{};
-    auto begin_it = str.begin();
-    auto end_it = begin_it;
-    for (;;) {
-        end_it = std::find(end_it, str.end(), delimiter);
-        result.emplace_back(begin_it, end_it);
-        if (end_it == str.end()) {
-            break;
-        }
-        begin_it = ++end_it;
-    }
-    return result;
-}
-
-std::vector<ip::Address> ParseAddresses() {
-    std::vector<ip::Address> result{};
-    for (std::string current_line{}; std::getline(std::cin, current_line) && !current_line.empty();) {
-        auto text_fields = SplitString(current_line, '\t');
-        auto address_fields = SplitString(text_fields.at(0), '.');
-        if (address_fields.size() != ip::kAddressSize) {
-            throw std::runtime_error("Invalid IP address representation");
-        }
-        ip::Address address{};
-        for (size_t i = 0; i < ip::kAddressSize; i++) {
-            address[i] = static_cast<ip::AddressByteT>(std::stoi(address_fields[i]));
-        }
-        result.push_back(std::move(address));
-    }
-    return result;
-}
+#include <ip_address.hpp>
+#include <parser.hpp>
 
 int main() {
-    auto addresses = ParseAddresses();
+    auto addresses = parser::ParseAddresses(std::cin);
 
-    // sort descending with order
+    // sort with descending order
     std::sort(addresses.begin(), addresses.end(),
               [](const auto& lhs, const auto& rhs) { return lhs > rhs; });
 
