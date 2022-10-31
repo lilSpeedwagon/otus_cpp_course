@@ -21,10 +21,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 if(WITH_BOOST_TEST)
-    set(TEST_SUITE_NAME test_ip_filter)
+    set(TEST_SUITE_NAME test_allocator)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-    add_executable(${TEST_SUITE_NAME}
-        src/test_utils.cpp
+    add_executable(${TEST_SUITE_NAME} 
+        tests/test_main.cpp
+        tests/test_allocator.cpp
     )
 
     set_target_properties(${TEST_SUITE_NAME} PROPERTIES
