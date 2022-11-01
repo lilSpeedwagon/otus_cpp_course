@@ -81,6 +81,14 @@ BOOST_AUTO_TEST_CASE(test_allocate_more_than_block_size) {
 	BOOST_CHECK_THROW(allocator.allocate(5), std::bad_alloc);
 }
 
+BOOST_AUTO_TEST_CASE(test_allocate_zero) {
+	allocators::BlockAllocator<int, 4> allocator;
+	auto ptr = allocator.allocate(0);
+	BOOST_CHECK(ptr == nullptr);
+	BOOST_CHECK(allocator.size() == 0);
+	BOOST_CHECK(allocator.blocks_allocated() == 0);
+}
+
 BOOST_AUTO_TEST_CASE(test_deallocate_one) {
 	allocators::BlockAllocator<int, 4> allocator;
 	auto ptr = allocator.allocate(1);
@@ -143,6 +151,19 @@ BOOST_AUTO_TEST_CASE(test_deallocate_too_much) {
 			return ex.what() == std::string(
 				"memory is corrupted or allocated by other allocator"); 
 		});
+}
+
+BOOST_AUTO_TEST_CASE(test_reuse_segment_for_new_element) {
+	allocators::BlockAllocator<int, 4> allocator;
+	auto ptr = allocator.allocate(1);
+	allocator.allocate(3);
+	BOOST_CHECK(allocator.size() == 4);
+	BOOST_CHECK(allocator.blocks_allocated() == 1);
+	allocator.deallocate(ptr, 1);
+	auto new_ptr = allocator.allocate(1);
+	BOOST_CHECK(ptr == new_ptr);
+	BOOST_CHECK(allocator.size() == 4);
+	BOOST_CHECK(allocator.blocks_allocated() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_clear) {

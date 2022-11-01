@@ -3,29 +3,30 @@
 #include <memory>
 #include <bitset>
 
-#include <iostream> // TODO remove
 
 namespace allocators {
 
+/// @brief Allocator which allocates memory with blocks of constant size.
+/// It helps to reduce OS memory manager calls even with many allocation
+/// of short memory segments. Allocation of memory with size more than 
+/// block size is prohibited.
+/// @tparam T type of the allocated elements
+/// @tparam BlockSize size of allocated block in terms of type T
 template<typename T, size_t BlockSize>
 class BlockAllocator {
-public:
-    using value_type = T;
+private:
     using BlockBitmap = std::bitset<BlockSize>;
-
     static constexpr const size_t block_size = BlockSize;
 
-    // sequental block of memory with fixed size of T
+    /// @brief Sequental block of memory with fixed size and elements of type T.
     struct MemoryBlock {
         // marks non-empty cells
         BlockBitmap free_flags;
         // data in block 
         T buffer[block_size];
-        // pointer to the next MemoryBlock
+        // pointer to the next MemoryBlock in linked list
         MemoryBlock* next_ptr;
 
-        // Returns pointer to the available segment of memory of size n,
-        // nullptr if no such segment is available.
         T* acquire_free_segment(size_t n) {
             if (free_flags.all()) {
                 return nullptr;
@@ -65,6 +66,9 @@ public:
         }
     };
 
+public:
+    using value_type = T;
+
     BlockAllocator() noexcept 
         : blocks_allocated_{0}, size_{0}, blocks_list_head_{nullptr} {}
     
@@ -72,42 +76,52 @@ public:
         clear();
     }
 
+    /// @brief Allocates sequental segment of memory.
+    /// @param n Size of allocated segment in terms of type T
+    /// @return Pointer to the beginning of the allocated segment. nullptr if n = 0.
+    /// @throw std::bad_alloc if cannot allocate memory or size of
+    /// the requested segment is bigger than size of memory block.
     T* allocate (std::size_t n) {
-        std::cout << "allocate(" << n << ")\n";
+        if (n == 0) {
+            return nullptr;
+        }
         if (n > block_size) {
             throw std::bad_alloc();
         }
+
         size_ += n;
-        std::cout << "new size " << size_ << '\n';
         if (size_ > blocks_allocated_ * block_size) {
-            std::cout << "it is not enough free memory, allocate new block\n";
             allocate_memory_block();
         }
         if (auto free_segment_ptr = find_free_segment(n);
             free_segment_ptr != nullptr) {
-            std::cout << "free segment found\n";
             return free_segment_ptr;
         }
-        std::cout << "free segment with enough size not found, allocate a new one\n";
         allocate_memory_block();
         return find_free_segment(n);
     }
 
+    /// @brief Deletes a segment of memory with size n.
+    /// The segment may be not physically deleted but could be
+    /// put back into the allocator memory pool and reused later.
+    /// @param ptr pointer to the deletable memory.
+    /// Must be obtained via the method allocate() of the corresponding allocator
+    /// @param n size of the deletable memory segment.
+    /// Must be the same as the size of the memory segment allocated via the allocate() method
     void deallocate(T* ptr, std::size_t n) {
-        std::cout << "deallocate " << n << '\n';
         MemoryBlock* block_ptr = blocks_list_head_;
         MemoryBlock* prev_ptr = nullptr;
         while (block_ptr != nullptr) {
             if (block_ptr->has_memory_segment(ptr, n)) {
                 block_ptr->release_segment(ptr, n);
+                // release memory block if it is empty
                 if (block_ptr->empty()) {
                     if (prev_ptr == nullptr && block_ptr == blocks_list_head_) {
                         blocks_list_head_ = nullptr;
                     } else {
                         prev_ptr->next_ptr = block_ptr->next_ptr;
                     }
-                    delete block_ptr;
-                    blocks_allocated_--;
+                    deallocate_memory_block(block_ptr);
                 }
                 if (n > size_) {
                     size_ = 0;
@@ -122,39 +136,29 @@ public:
         throw std::logic_error("memory is corrupted or allocated by other allocator");
     }
 
+    /// @brief Deletes all of the allocated memory blocks.
     void clear() {
         auto block_ptr = blocks_list_head_;
         while (block_ptr != nullptr) {
             auto to_delete = block_ptr;
             block_ptr = block_ptr->next_ptr;
-            delete to_delete;
+            deallocate_memory_block(to_delete);
         }
-        blocks_allocated_ = 0;
         size_ = 0;
         blocks_list_head_ = nullptr;
     }
 
-    void print() {
-        std::cout << "size " << size_ << '/' << blocks_allocated_ * BlockSize << '\n';
-        auto block_ptr = blocks_list_head_;
-        for (int i = 0; block_ptr != nullptr; i++) {
-            std::cout << "Block " << i << ": " << block_ptr->free_flags;
-            block_ptr = block_ptr->next_ptr;
-        }
-        std::cout << std::endl;
-    }
-
+    /// @brief Returns the number of allocated items.
     size_t size() const {
         return size_;
     }
 
+    /// @brief Returns the number of allocated memory blocks.
     size_t blocks_allocated() const {
         return blocks_allocated_;
     }
 
 private:
-    static constexpr const size_t real_block_size = sizeof(MemoryBlock);
-
     MemoryBlock* allocate_memory_block() {
         auto block_ptr = new MemoryBlock{};
         block_ptr->next_ptr = blocks_list_head_;
@@ -184,6 +188,7 @@ private:
     MemoryBlock* blocks_list_head_;
 };
 
+// Allocator with zero-size blocks is not allowed.
 template<typename T>
 class BlockAllocator<T, 0> {};
 
