@@ -25,22 +25,21 @@ public:
 
     BlockAllocator() noexcept 
         : blocks_allocated_{0}, size_{0}, blocks_list_head_{nullptr} {}
-    BlockAllocator(BlockAllocator&& other)
-        : blocks_allocated_{0}, size_{0}, blocks_list_head_{0} {
-        std::swap(blocks_allocated_, other.blocks_allocated_);
-        std::swap(size_, other.size_);
-        std::swap(blocks_list_head_, other.blocks_list_head_);
+    BlockAllocator(const BlockAllocator& other) {
+        copy(other);
     }
-    BlockAllocator& operator=(BlockAllocator&& other) {
-        std::swap(blocks_allocated_, other.blocks_allocated_);
-        std::swap(size_, other.size_);
-        std::swap(blocks_list_head_, other.blocks_list_head_);
+    BlockAllocator& operator=(const BlockAllocator& other) {
+        copy(other);
         return *this;
     }
-
-    // copy is not allowed
-    BlockAllocator(const BlockAllocator&) = delete;
-    BlockAllocator& operator=(const BlockAllocator&) = delete;
+    BlockAllocator(BlockAllocator&& other)
+        : blocks_allocated_{0}, size_{0}, blocks_list_head_{0} {
+        swap(std::move(other));
+    }
+    BlockAllocator& operator=(BlockAllocator&& other) {
+        swap(std::move(other));
+        return *this;
+    }
 
     ~BlockAllocator() {
         clear();
@@ -199,6 +198,31 @@ private:
             current_block_ptr = current_block_ptr->next_ptr;
         }
         return nullptr;
+    }
+
+    void swap(BlockAllocator&& other) {
+        std::swap(size_, other.size_);
+        std::swap(blocks_allocated_, other.blocks_allocated_);
+        std::swap(blocks_list_head_, other.blocks_list_head_);
+    }
+
+    void copy(const BlockAllocator& other) {
+        blocks_list_head_ = nullptr;
+        MemoryBlock* other_ptr = other.blocks_list_head_;
+        MemoryBlock* ptr = nullptr;
+        while (other_ptr != nullptr) {
+            auto block_copy_ptr = new MemoryBlock{*other_ptr};
+            if (blocks_list_head_ == nullptr) {
+                blocks_list_head_ = block_copy_ptr;
+                ptr = block_copy_ptr;
+            } else {
+                ptr->next_ptr = block_copy_ptr;
+                ptr = ptr->next_ptr;
+            }
+            other_ptr = other_ptr->next_ptr;
+        }
+        blocks_allocated_ = other.blocks_allocated_;
+        size_ = other.size_;
     }
 
     size_t blocks_allocated_;

@@ -183,6 +183,65 @@ BOOST_AUTO_TEST_CASE(test_clear_data) {
 	BOOST_CHECK(allocator.blocks_allocated() == 0);
 }
 
+BOOST_AUTO_TEST_CASE(test_copy_empty) {
+	allocators::BlockAllocator<int, 4> allocator;
+	auto new_allocator(allocator);
+	BOOST_CHECK(allocator.size() == 0);
+	BOOST_CHECK(allocator.blocks_allocated() == 0);
+	BOOST_CHECK(new_allocator.size() == 0);
+	BOOST_CHECK(new_allocator.blocks_allocated() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(test_copy) {
+	allocators::BlockAllocator<int, 4> allocator;
+	for (size_t i = 1; i <= 4; i++) {
+		allocator.allocate(i);
+	}
+	BOOST_CHECK(allocator.size() == 10);
+	BOOST_CHECK(allocator.blocks_allocated() == 3);
+	
+	auto new_allocator(allocator);
+	BOOST_CHECK(allocator.size() == 10);
+	BOOST_CHECK(allocator.blocks_allocated() == 3);
+	BOOST_CHECK(new_allocator.size() == 10);
+	BOOST_CHECK(new_allocator.blocks_allocated() == 3);
+}
+
+BOOST_AUTO_TEST_CASE(test_copy_assignment_empty) {
+	allocators::BlockAllocator<int, 4> allocator;
+	allocators::BlockAllocator<int, 4> new_allocator;
+	new_allocator = allocator;
+	BOOST_CHECK(allocator.size() == 0);
+	BOOST_CHECK(allocator.blocks_allocated() == 0);
+	BOOST_CHECK(new_allocator.size() == 0);
+	BOOST_CHECK(new_allocator.blocks_allocated() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(test_copy_assignment) {
+	allocators::BlockAllocator<int, 4> allocator;
+	for (size_t i = 1; i <= 4; i++) {
+		allocator.allocate(i);
+	}
+	BOOST_CHECK(allocator.size() == 10);
+	BOOST_CHECK(allocator.blocks_allocated() == 3);
+	
+	allocators::BlockAllocator<int, 4> new_allocator;
+	new_allocator = allocator;
+	BOOST_CHECK(allocator.size() == 10);
+	BOOST_CHECK(allocator.blocks_allocated() == 3);
+	BOOST_CHECK(new_allocator.size() == 10);
+	BOOST_CHECK(new_allocator.blocks_allocated() == 3);
+}
+
+BOOST_AUTO_TEST_CASE(test_move_empty) {
+	allocators::BlockAllocator<int, 4> allocator;
+	allocators::BlockAllocator<int, 4> new_allocator(std::move(allocator));
+	BOOST_CHECK(allocator.size() == 0);
+	BOOST_CHECK(allocator.blocks_allocated() == 0);
+	BOOST_CHECK(new_allocator.size() == 0);
+	BOOST_CHECK(new_allocator.blocks_allocated() == 0);
+}
+
 BOOST_AUTO_TEST_CASE(test_move) {
 	allocators::BlockAllocator<int, 4> allocator;
 	for (size_t i = 1; i <= 4; i++) {
@@ -191,11 +250,21 @@ BOOST_AUTO_TEST_CASE(test_move) {
 	BOOST_CHECK(allocator.size() == 10);
 	BOOST_CHECK(allocator.blocks_allocated() == 3);
 	
-	auto new_allocator = std::move(allocator);
+	allocators::BlockAllocator<int, 4> new_allocator(std::move(allocator));
 	BOOST_CHECK(allocator.size() == 0);
 	BOOST_CHECK(allocator.blocks_allocated() == 0);
 	BOOST_CHECK(new_allocator.size() == 10);
 	BOOST_CHECK(new_allocator.blocks_allocated() == 3);
+}
+
+BOOST_AUTO_TEST_CASE(test_move_assignment_empty) {
+	allocators::BlockAllocator<int, 4> allocator;
+	allocators::BlockAllocator<int, 4> new_allocator;
+	new_allocator = std::move(allocator);
+	BOOST_CHECK(allocator.size() == 0);
+	BOOST_CHECK(allocator.blocks_allocated() == 0);
+	BOOST_CHECK(new_allocator.size() == 0);
+	BOOST_CHECK(new_allocator.blocks_allocated() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(test_move_assignment) {
