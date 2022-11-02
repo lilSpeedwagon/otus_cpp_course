@@ -22,6 +22,16 @@ private:
 
 public:
     using value_type = T;
+    using reference = T&;
+    using const_reference = const T&;
+    using pointer = T*;
+    using const_pointer = const T*;
+    using difference_type = ptrdiff_t;
+
+    template <typename U>
+    struct rebind {
+		typedef BlockAllocator<U, BlockSize> other;
+    };
 
     BlockAllocator() noexcept 
         : blocks_allocated_{0}, size_{0}, blocks_list_head_{nullptr} {}
@@ -50,7 +60,7 @@ public:
     /// @return Pointer to the beginning of the allocated segment. nullptr if n = 0.
     /// @throw std::bad_alloc if cannot allocate memory or size of
     /// the requested segment is bigger than size of memory block.
-    T* allocate (std::size_t n) {
+    pointer allocate (size_t n) {
         if (n == 0) {
             return nullptr;
         }
@@ -77,7 +87,7 @@ public:
     /// Must be obtained via the method allocate() of the corresponding allocator
     /// @param n size of the deletable memory segment.
     /// Must be the same as the size of the memory segment allocated via the allocate() method
-    void deallocate(T* ptr, std::size_t n) {
+    void deallocate(pointer ptr, std::size_t n) {
         MemoryBlock* block_ptr = blocks_list_head_;
         MemoryBlock* prev_ptr = nullptr;
         while (block_ptr != nullptr) {
@@ -105,6 +115,34 @@ public:
         throw std::logic_error("memory is corrupted or allocated by other allocator");
     }
 
+    /// @brief Constructs object with given parameters on specified memory address.
+    /// @tparam Type of the constructible object
+    /// @tparam ...Args Pack of constructor arguments types
+    /// @param ptr Pointer to the allocated memory for the object
+    /// @param ...args Pack of constructor arguments
+    template<typename U, typename ...Args>
+    void construct(U* ptr, Args&&... args) {
+        ::new((void*)ptr) U(std::forward<Args>(args)...);
+    }
+
+    /// @brief Destroys object on the specified address.
+    /// @tparam U object type
+    /// @param ptr pointer to the object
+    template<typename U>
+    void destroy(U* ptr) {
+        ptr->~U();
+    }
+
+    /// @brief Returns the actual address of value.
+    pointer address(reference value) const {
+        return &value;
+    }
+
+    /// @brief Returns the actual address of value.
+    const_pointer address(const_reference value) const {
+        return &value;
+    }
+
     /// @brief Deletes all of the allocated memory blocks.
     void clear() {
         auto block_ptr = blocks_list_head_;
@@ -127,17 +165,22 @@ public:
         return blocks_allocated_;
     }
 
+    /// @brief Returns the maximum number of elements allowed for one allocation.
+    size_t max_size() const {
+        return block_size;
+    }
+
 private:
     /// @brief Sequental block of memory with fixed size and elements of type T.
     struct MemoryBlock {
         // marks non-empty cells
         BlockBitmap free_flags;
         // data in block 
-        T buffer[block_size];
+        value_type buffer[block_size];
         // pointer to the next MemoryBlock in linked list
         MemoryBlock* next_ptr;
 
-        T* acquire_free_segment(size_t n) {
+        pointer acquire_free_segment(size_t n) {
             if (free_flags.all()) {
                 return nullptr;
             }
@@ -156,7 +199,7 @@ private:
             return nullptr;
         }
 
-        void release_segment(T* ptr, size_t n) {
+        void release_segment(pointer ptr, size_t n) {
             set_flags(ptr - buffer, n, false);
         }
 
@@ -166,7 +209,7 @@ private:
             }
         }
 
-        bool has_memory_segment(T* ptr, size_t n) {
+        bool has_memory_segment(pointer ptr, size_t n) {
             auto buffer_ptr = static_cast<T*>(buffer);
             return ptr >= buffer_ptr && ptr + n <= buffer_ptr + block_size;
         }
@@ -189,7 +232,7 @@ private:
         blocks_allocated_--;
     }
 
-    T* find_free_segment(size_t n) {
+    pointer find_free_segment(size_t n) {
         auto current_block_ptr = blocks_list_head_;
         while (current_block_ptr != nullptr) {
             if (auto ptr = current_block_ptr->acquire_free_segment(n); ptr != nullptr) {
