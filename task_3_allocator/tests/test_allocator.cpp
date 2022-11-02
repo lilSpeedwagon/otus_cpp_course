@@ -166,6 +166,41 @@ BOOST_AUTO_TEST_CASE(test_reuse_segment_for_new_element) {
 	BOOST_CHECK(allocator.blocks_allocated() == 1);
 }
 
+BOOST_AUTO_TEST_CASE(construct) {
+	allocators::BlockAllocator<int, 4> allocator;
+	auto ptr = allocator.allocate(1);
+	allocator.construct(ptr, 1);
+	BOOST_CHECK(*ptr == 1);
+}
+
+BOOST_AUTO_TEST_CASE(construct_compound) {
+	allocators::BlockAllocator<std::string, 4> allocator;
+	auto ptr = allocator.allocate(1);
+	allocator.construct(ptr, 10, 'c');
+	BOOST_CHECK(*ptr == std::string("cccccccccc"));
+}
+
+BOOST_AUTO_TEST_CASE(destroy) {
+	allocators::BlockAllocator<int, 4> allocator;
+	auto ptr = allocator.allocate(1);
+	allocator.construct(ptr, 1);
+	allocator.destroy(ptr);
+	BOOST_CHECK(*ptr == 1);
+}
+
+BOOST_AUTO_TEST_CASE(destroy_compound) {
+	struct Destructable {
+		~Destructable() { is_desctoyed = true; }
+		bool is_desctoyed = false;
+	};
+
+	allocators::BlockAllocator<Destructable, 4> allocator;
+	auto ptr = allocator.allocate(1);
+	allocator.construct(ptr);
+	allocator.destroy(ptr);
+	BOOST_CHECK(ptr->is_desctoyed);
+}
+
 BOOST_AUTO_TEST_CASE(test_clear_empty) {
 	allocators::BlockAllocator<int, 4> allocator;
 	allocator.clear();
