@@ -26,6 +26,7 @@ if(WITH_BOOST_TEST)
     add_executable(${TEST_SUITE_NAME} 
         tests/test_main.cpp
         tests/test_allocator.cpp
+        tests/test_list.cpp
     )
 
     set_target_properties(${TEST_SUITE_NAME} PROPERTIES
