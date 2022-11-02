@@ -15,63 +15,33 @@ namespace allocators {
 template<typename T, size_t BlockSize>
 class BlockAllocator {
 private:
+    // forward declaration
     using BlockBitmap = std::bitset<BlockSize>;
     static constexpr const size_t block_size = BlockSize;
-
-    /// @brief Sequental block of memory with fixed size and elements of type T.
-    struct MemoryBlock {
-        // marks non-empty cells
-        BlockBitmap free_flags;
-        // data in block 
-        T buffer[block_size];
-        // pointer to the next MemoryBlock in linked list
-        MemoryBlock* next_ptr;
-
-        T* acquire_free_segment(size_t n) {
-            if (free_flags.all()) {
-                return nullptr;
-            }
-            size_t free_sequence_size = 0;
-            for (size_t i = 0; i < free_flags.size(); i++) {
-                if (!free_flags[i]) {
-                    if (++free_sequence_size == n) {
-                        size_t from = i - n + 1;
-                        set_flags(from, n, true);
-                        return buffer + from;
-                    }
-                } else {
-                    free_sequence_size = 0;
-                }
-            }
-            return nullptr;
-        }
-
-        void release_segment(T* ptr, size_t n) {
-            set_flags(ptr - buffer, n, false);
-        }
-
-        void set_flags(size_t from, size_t count, bool value) {
-            for (size_t i = from; i < from + count; i++) {
-                free_flags[i] = value;
-            }
-        }
-
-        bool has_memory_segment(T* ptr, size_t n) {
-            auto buffer_ptr = static_cast<T*>(buffer);
-            return ptr >= buffer_ptr && ptr + n <= buffer_ptr + block_size;
-        }
-
-        bool empty() {
-            return free_flags.none();
-        }
-    };
+    struct MemoryBlock;
 
 public:
     using value_type = T;
 
     BlockAllocator() noexcept 
         : blocks_allocated_{0}, size_{0}, blocks_list_head_{nullptr} {}
-    
+    BlockAllocator(BlockAllocator&& other)
+        : blocks_allocated_{0}, size_{0}, blocks_list_head_{0} {
+        std::swap(blocks_allocated_, other.blocks_allocated_);
+        std::swap(size_, other.size_);
+        std::swap(blocks_list_head_, other.blocks_list_head_);
+    }
+    BlockAllocator& operator=(BlockAllocator&& other) {
+        std::swap(blocks_allocated_, other.blocks_allocated_);
+        std::swap(size_, other.size_);
+        std::swap(blocks_list_head_, other.blocks_list_head_);
+        return *this;
+    }
+
+    // copy is not allowed
+    BlockAllocator(const BlockAllocator&) = delete;
+    BlockAllocator& operator=(const BlockAllocator&) = delete;
+
     ~BlockAllocator() {
         clear();
     }
@@ -159,6 +129,54 @@ public:
     }
 
 private:
+    /// @brief Sequental block of memory with fixed size and elements of type T.
+    struct MemoryBlock {
+        // marks non-empty cells
+        BlockBitmap free_flags;
+        // data in block 
+        T buffer[block_size];
+        // pointer to the next MemoryBlock in linked list
+        MemoryBlock* next_ptr;
+
+        T* acquire_free_segment(size_t n) {
+            if (free_flags.all()) {
+                return nullptr;
+            }
+            size_t free_sequence_size = 0;
+            for (size_t i = 0; i < free_flags.size(); i++) {
+                if (!free_flags[i]) {
+                    if (++free_sequence_size == n) {
+                        size_t from = i - n + 1;
+                        set_flags(from, n, true);
+                        return buffer + from;
+                    }
+                } else {
+                    free_sequence_size = 0;
+                }
+            }
+            return nullptr;
+        }
+
+        void release_segment(T* ptr, size_t n) {
+            set_flags(ptr - buffer, n, false);
+        }
+
+        void set_flags(size_t from, size_t count, bool value) {
+            for (size_t i = from; i < from + count; i++) {
+                free_flags[i] = value;
+            }
+        }
+
+        bool has_memory_segment(T* ptr, size_t n) {
+            auto buffer_ptr = static_cast<T*>(buffer);
+            return ptr >= buffer_ptr && ptr + n <= buffer_ptr + block_size;
+        }
+
+        bool empty() {
+            return free_flags.none();
+        }
+    };
+
     MemoryBlock* allocate_memory_block() {
         auto block_ptr = new MemoryBlock{};
         block_ptr->next_ptr = blocks_list_head_;
@@ -192,4 +210,4 @@ private:
 template<typename T>
 class BlockAllocator<T, 0> {};
 
-} // allocators
+} // namespace allocators
