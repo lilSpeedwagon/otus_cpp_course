@@ -28,6 +28,19 @@ BOOST_AUTO_TEST_CASE(test_push_and_iterate) {
 	BOOST_CHECK(++it == list.end());
 }
 
+BOOST_AUTO_TEST_CASE(test_range_based_for) {
+	containers::LinkedList<int> list;
+	std::vector<int> values = {0, 1, 2, 3, 4};
+	int i = 0;
+	for (; i < 5; i++) {
+		list.push_front(values[i]);
+	}
+	for (auto& value : list) {
+		i--;
+		BOOST_CHECK(value == values[i]);
+	}
+}
+
 BOOST_AUTO_TEST_CASE(test_clear_empty) {
 	containers::LinkedList<int> list;
 	list.clear();
@@ -50,7 +63,7 @@ BOOST_AUTO_TEST_CASE(test_copy_empty) {
 	containers::LinkedList<int> new_list(list);
 	BOOST_CHECK(new_list.size() == 0);
 	BOOST_CHECK(new_list.empty());
-	BOOST_CHECK(new_list.begin() == list.end());
+	BOOST_CHECK(new_list.begin() == new_list.end());
 }
 
 BOOST_AUTO_TEST_CASE(test_copy) {

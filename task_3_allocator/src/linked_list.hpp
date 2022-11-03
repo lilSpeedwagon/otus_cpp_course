@@ -51,7 +51,8 @@ public:
     };
 
     LinkedList() : head_ptr_{nullptr}, size_{0} {}
-    LinkedList(const LinkedList& other) {
+    LinkedList(const LinkedList& other)
+        : head_ptr_{nullptr}, size_{0} {
         clear();
         copy(other);
     }

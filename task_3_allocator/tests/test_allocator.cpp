@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(test_clear_data) {
 
 BOOST_AUTO_TEST_CASE(test_copy_empty) {
 	allocators::BlockAllocator<int, 4> allocator;
-	auto new_allocator(allocator);
+	allocators::BlockAllocator<int, 4> new_allocator(allocator);
 	BOOST_CHECK(allocator.size() == 0);
 	BOOST_CHECK(allocator.blocks_allocated() == 0);
 	BOOST_CHECK(new_allocator.size() == 0);

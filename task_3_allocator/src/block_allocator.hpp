@@ -35,7 +35,8 @@ public:
 
     BlockAllocator() noexcept 
         : blocks_allocated_{0}, size_{0}, blocks_list_head_{nullptr} {}
-    BlockAllocator(const BlockAllocator& other) {
+    BlockAllocator(const BlockAllocator& other)
+        : blocks_allocated_{0}, size_{0}, blocks_list_head_{nullptr} {
         clear();
         copy(other);
     }
