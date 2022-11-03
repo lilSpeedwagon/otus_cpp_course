@@ -52,13 +52,15 @@ public:
 
     LinkedList() : head_ptr_{nullptr}, size_{0} {}
     LinkedList(const LinkedList& other) {
+        clear();
         copy(other);
     }
     LinkedList& operator=(const LinkedList& other) {
+        clear();
         copy(other);
         return *this;
     }
-    LinkedList(LinkedList&& other) {
+    LinkedList(LinkedList&& other) : head_ptr_{nullptr}, size_{0} {
         swap(std::move(other));
     }
     LinkedList& operator=(LinkedList&& other) {

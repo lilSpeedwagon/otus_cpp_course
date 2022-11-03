@@ -36,9 +36,11 @@ public:
     BlockAllocator() noexcept 
         : blocks_allocated_{0}, size_{0}, blocks_list_head_{nullptr} {}
     BlockAllocator(const BlockAllocator& other) {
+        clear();
         copy(other);
     }
     BlockAllocator& operator=(const BlockAllocator& other) {
+        clear();
         copy(other);
         return *this;
     }
@@ -50,7 +52,6 @@ public:
         swap(std::move(other));
         return *this;
     }
-
     ~BlockAllocator() {
         clear();
     }

@@ -97,9 +97,10 @@ BOOST_AUTO_TEST_CASE(test_copy_assign) {
 BOOST_AUTO_TEST_CASE(test_move_empty) {
 	containers::LinkedList<int> list;
 	containers::LinkedList<int> new_list(std::move(list));
-	BOOST_CHECK(new_list.size() == 0);
+	BOOST_CHECK(list.empty());
+	BOOST_CHECK(list.begin() == list.end());
 	BOOST_CHECK(new_list.empty());
-	BOOST_CHECK(new_list.begin() == list.end());
+	BOOST_CHECK(new_list.begin() == new_list.end());
 }
 
 BOOST_AUTO_TEST_CASE(test_move) {
