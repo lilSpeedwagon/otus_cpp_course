@@ -25,6 +25,7 @@ if(WITH_BOOST_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
     add_executable(${TEST_SUITE_NAME}
         tests/test_main.cpp
+        tests/test_print_ip.cpp
     )
 
     set_target_properties(${TEST_SUITE_NAME} PROPERTIES
