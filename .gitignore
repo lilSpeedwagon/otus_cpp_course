@@ -93,3 +93,6 @@ _deps
 
 # build files
 build
+
+# VS Code
+.vscode

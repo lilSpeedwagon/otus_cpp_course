@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: IP filter release workflow
 
 on:
   push:
