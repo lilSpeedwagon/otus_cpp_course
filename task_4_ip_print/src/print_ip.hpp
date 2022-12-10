@@ -5,6 +5,7 @@
 #include <tuple>
 #include <vector>
 
+/// @brief ip address utility functions
 namespace ip {
 
 namespace impl {
@@ -32,19 +33,19 @@ void print_tuple(const std::tuple<Args...>& tuple, std::ostream& stream) {
 } // namespace impl
 
 /// @brief Prints IP address with custom number of elements.
-/// Template specialization for tuple with elements of the same type.
-/// @tparam T tuple type
-/// @param tuple tuple to print as an IP address
+/// Has following specializations:
+/// - std::tuple<Args...> - prints elements as separate address bytes. All types in Args... must be the same
+/// - std::string - prints element address as is
+/// - integral types - prints each byte of an integral type as a separate address byte
+/// - sequental container types (std::vector<T>, std::list<T>) - prints each element as a separate address byte
+/// @tparam T address type
+/// @param address address to print
 template<typename T,
          typename std::enable_if<impl::is_tuple<T>::value, bool>::type = true>
-void print_ip(const T& tuple, std::ostream& stream = std::cout) {
-    impl::print_tuple(tuple, stream);
+void print_ip(const T& address, std::ostream& stream = std::cout) {
+    impl::print_tuple(address, stream);
 }
 
-/// @brief Prints IP address with custom number of elements.
-/// Template specialization for integral types. Every byte of the integer is treated as a IP address element.
-/// @tparam T integral type
-/// @param address integer to print as an IP address
 template<typename T,
          typename std::enable_if<std::is_integral<T>::value, bool>::type = true>
 void print_ip(const T& address, std::ostream& stream = std::cout) {
@@ -60,23 +61,14 @@ void print_ip(const T& address, std::ostream& stream = std::cout) {
     }
 }
 
-/// @brief Prints IP address with custom number of elements.
-/// Template specialization for std::string. Address is printed as is.
-/// @param address string to print as an IP address
-template<typename T,
-         typename std::enable_if<std::is_same<T, std::string>::value, bool>::type = true>
+typename std::enable_if<std::is_same<T, std::string>::value, bool>::type = true>
 void print_ip(const T& address, std::ostream& stream = std::cout) {
     stream << address;
 }
 
-/// @brief Prints IP address with custom number of elements.
-/// Template specialization for containers. Each container item is printed as is.
-/// @tparam T container type
-/// @tparam U item type
-/// @param address container to print as an IP address
-template<typename T, typename U = typename T::value_type,
-         typename std::enable_if<std::is_same<T, std::vector<U>>::value ||
-                                 std::is_same<T, std::list<U>>::value, bool>::type = true>
+template<typename T,
+         typename std::enable_if<std::is_same<T, std::vector<typename T::value_type>>::value ||
+                                 std::is_same<T, std::list<typename T::value_type>>::value, bool>::type = true>
 void print_ip(const T& address, std::ostream& stream = std::cout) {
     bool first = true;
     for (const auto& value : address) {
