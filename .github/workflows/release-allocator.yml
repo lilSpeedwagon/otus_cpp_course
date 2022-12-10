@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Custom allocator release workflow
 
 on:
   push:
