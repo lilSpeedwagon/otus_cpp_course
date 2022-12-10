@@ -1,10 +1,10 @@
-name: helloworld release workflow
+name: IP print release workflow
 
 on:
   push:
-    branches: [ helloworld_cli ]
+    branches: [ task_4_ip_print ]
   pull_request:
-    branches: [ helloworld_cli ]
+    branches: [ task_4_ip_print ]
 
 jobs:
   build:
@@ -16,16 +16,16 @@ jobs:
     - name: install boost
       run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
     - name: cmake configure
-      working-directory: ./task_1_cpp_builder
+      working-directory: ./task_4_ip_print
       run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON
     - name: make build
-      working-directory: ./task_1_cpp_builder
+      working-directory: ./task_4_ip_print
       run: cmake --build .
     - name: run tests
-      working-directory: ./task_1_cpp_builder
-      run: cmake --build . --target test
+      working-directory: ./task_4_ip_print
+      run: cmake --build . --target test_ip_filter
     - name: build package
-      working-directory: ./task_1_cpp_builder
+      working-directory: ./task_4_ip_print
       run: cmake --build . --target package
     - name: release
       id: create_release
@@ -33,8 +33,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: helloworld_${{ github.run_number }}
-        release_name: Release HelloWorld_${{ github.run_number }}
+        tag_name: ip_filter_${{ github.run_number }}
+        release_name: Release IpPrint_${{ github.run_number }}
         draft: false
         prerelease: false
     - name: upload artifacts
@@ -44,6 +44,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./task_1_cpp_builder/_CPack_Packages/Linux/DEB/helloworld-0.0.${{ github.run_number }}-Linux.deb
-        asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
+        asset_path: ./task_4_ip_print/_CPack_Packages/Linux/DEB/ip_print-0.0.${{ github.run_number }}-Linux.deb
+        asset_name: ip_print-0.0.${{ github.run_number }}-Linux.deb
         asset_content_type: application/vnd.debian.binary-package
