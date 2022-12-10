@@ -27,6 +27,20 @@ jobs:
     - name: build package
       working-directory: ./task_4_ip_print
       run: cmake --build . --target package
+    - name: Build Doxygen docs
+      uses: mattnotmitt/doxygen-action@v1.1.0
+      with:
+        doxyfile-path: ./Doxyfile
+        working-directory: ./task_4_ip_print
+    - name: GH Pages Deployment
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/html/
+        enable_jekyll: false
+        allow_empty_commit: false
+        force_orphan: true
+        publish_branch: docs
     - name: release
       id: create_release
       uses: actions/create-release@v1
