@@ -30,7 +30,7 @@ jobs:
     - name: Build Doxygen docs
       uses: mattnotmitt/doxygen-action@v1.1.0
       with:
-        doxyfile-path: ./Doxyfile
+        doxyfile-path: ../Doxyfile
         working-directory: ./task_4_ip_print
     - name: GH Pages Deployment
       uses: peaceiris/actions-gh-pages@v3
@@ -47,7 +47,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ip_filter_${{ github.run_number }}
+        tag_name: ip_print_${{ github.run_number }}
         release_name: Release IpPrint_${{ github.run_number }}
         draft: false
         prerelease: false
