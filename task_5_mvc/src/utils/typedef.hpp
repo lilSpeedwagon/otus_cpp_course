@@ -10,6 +10,8 @@ namespace utils {
 template<typename T, typename Tag>
 class StrongTypedef {
 public:
+    using underlying_type = T;
+
     StrongTypedef() : value_() {}
     explicit StrongTypedef(const T& value) : value_(value) {}
     explicit StrongTypedef(T&& value) : value_(std::move(value)) {}

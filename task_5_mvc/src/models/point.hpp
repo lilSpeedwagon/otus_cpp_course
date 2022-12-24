@@ -2,6 +2,7 @@
 
 #include <vector>
 
+
 namespace mvc::shapes {
 
 /// @brief A point in two-dimensional space.

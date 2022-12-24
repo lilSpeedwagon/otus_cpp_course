@@ -1,7 +1,8 @@
 #pragma once
 
-#include "point.hpp"
-#include "shape.hpp"
+#include <models/point.hpp>
+#include <models/shape.hpp>
+
 
 namespace mvc::shapes {
 

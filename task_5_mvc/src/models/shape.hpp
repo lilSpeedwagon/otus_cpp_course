@@ -6,6 +6,7 @@
 #include <models/point.hpp>
 #include <utils/typedef.hpp>
 
+
 namespace mvc::shapes {
 
 /// @brief Abstract vector shape.
