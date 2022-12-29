@@ -33,9 +33,11 @@ public:
     /// @param id id of the deletable shape
     /// @return true if shap is deleted
     bool DeleteShape(const shapes::ShapeId& id) {
-        const auto deleted_count = shapes_.erase(id);
-        OnUpdate();
-        return deleted_count != 0;
+        if (shapes_.erase(id) != 0) {
+            OnUpdate();
+            return true;
+        }
+        return false;
     }
 
 private:

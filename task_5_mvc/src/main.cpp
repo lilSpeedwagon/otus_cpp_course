@@ -16,7 +16,8 @@ std::unique_ptr<mvc::controller::Editor> InitEditor() {
 }
 
 void PrintHelp() {
-    std::cout << "";
+    std::cout << "Commands:\n"
+        << "TODO\n\n";
 }
 
 float GetParam(const std::string& name) {
@@ -34,6 +35,8 @@ int main() {
     std::unordered_map<std::string, std::function<void(void)>> commands = {
         {"create", [&editor_ptr]() {
             editor_ptr->CreateDocument();
+            auto name = editor_ptr->GetCurrentDocumentName();
+            std::cout << "New file is created as \"" << name.value() << "\".\n";
         }},
         {"open", [&editor_ptr]() {
             std::cout << "Document name: ";
@@ -55,7 +58,15 @@ int main() {
                 std::cout << "No opened document\n";
             }
         }},
-        {"add shape", [&editor_ptr, &factory]() {
+        {"close", [&editor_ptr]() {
+            bool is_closed = editor_ptr->CloseDocument();
+            if (is_closed) {
+                std::cout << "Document is closed.\n";
+            } else {
+                std::cout << "No opened documents to close.\n";
+            }
+        }},
+        {"add-shape", [&editor_ptr, &factory]() {
             auto doc = editor_ptr->GetCurrentDocument();
             if (doc == nullptr) {
                 std::cout << "No opened document\n";
@@ -65,18 +76,31 @@ int main() {
             std::cout << "Shape name: ";
             std::string name;
             std::cin >> name;
-            auto param_names = factory.GetParams(name);
+            std::vector<std::string> param_names;
+            try {
+                param_names = factory.GetParams(name);
+            } catch (const std::runtime_error& ex) {
+                std::cout << "Error: " << ex.what() << "\n";
+                return;
+            }
+
             std::vector<float> params;
             for (const auto& param_name : param_names) {
                 auto param = GetParam(param_name);
                 params.push_back(param);
             }
-            auto shape_ptr = factory.BuildShape(name, params);
+            mvc::shapes::ShapePtr shape_ptr;
+            try {
+                shape_ptr = factory.BuildShape(name, params);
+            } catch(const std::runtime_error& ex) {
+                std::cout << "Error: " << ex.what() << "\n";
+                return;
+            }
             auto shape_id = doc->AddShape(shape_ptr);
             std::cout << "Shape " << name 
                       << " with id=" << shape_id.GetUnderlying() << " is added\n";
         }},
-        {"delete shape", [&editor_ptr]() {
+        {"delete-shape", [&editor_ptr]() {
             auto doc = editor_ptr->GetCurrentDocument();
             if (doc == nullptr) {
                 std::cout << "No opened document\n";
@@ -94,16 +118,26 @@ int main() {
                 std::cout << "Shape with id=" << shape_id_value << " is not found\n";
             }
         }},
+        {"help", []() {
+            PrintHelp();
+        }},
         {"exit", [&exit]() {
             exit = true;
         }},
     };
 
+    std::cout << "Welcome to Cool Vector Graphic Editor 1.0. Type help to show list of available commands.\n";
     while (!exit) {
         auto current_document_name_opt = editor_ptr->GetCurrentDocumentName();
         std::cout << "[" << current_document_name_opt.value_or("-") << "]: ";
-        std::string command;
-        std::cin >> command;
+        std::string command_input;
+        std::cin >> command_input;
+        if (auto it = commands.find(command_input);
+            it != commands.end()) {
+            it->second();
+        } else {
+            std::cout << "Unknown command, type \"help\" for instructions\n"; 
+        }
         std::cout << std::endl;
     }
 

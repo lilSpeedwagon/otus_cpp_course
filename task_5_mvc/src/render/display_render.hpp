@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include <boost/noncopyable.hpp>
@@ -14,7 +13,7 @@ namespace mvc::render {
 class DisplayRenderEngine : public boost::noncopyable {
 public:
     /// @brief Get an instance of RenderEngine. Based on lazy loading approach.
-    static std::shared_ptr<DisplayRenderEngine> GetInstance();
+    static DisplayRenderEngine* GetInstance();
     
     ~DisplayRenderEngine();
 
@@ -25,7 +24,7 @@ private:
     DisplayRenderEngine();
     void RenderShape(const shapes::ShapePtr& shape_ptr);
 
-    static std::shared_ptr<DisplayRenderEngine> instance_ptr;
+    static DisplayRenderEngine* instance_ptr;
 };
 
 } // namespace mvc::render

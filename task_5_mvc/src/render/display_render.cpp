@@ -7,24 +7,26 @@
 
 namespace mvc::render {
 
-std::shared_ptr<DisplayRenderEngine> DisplayRenderEngine::GetInstance() {
+DisplayRenderEngine* DisplayRenderEngine::instance_ptr = nullptr;
+
+DisplayRenderEngine* DisplayRenderEngine::GetInstance() {
     if (instance_ptr == nullptr) {
-        instance_ptr = std::make_shared<DisplayRenderEngine>();
+        instance_ptr = new DisplayRenderEngine();
     }
     return instance_ptr;
 }
     
+DisplayRenderEngine::DisplayRenderEngine() {}
+
 DisplayRenderEngine::~DisplayRenderEngine() {}
 
 void DisplayRenderEngine::RenderShapes(const std::vector<shapes::ShapePtr>& shapes) {
-    std::cout << "-------- Render start ---------";
+    std::cout << "-------- Render start ---------\n";
     for (const auto& shape : shapes) {
         RenderShape(shape);
     }
-    std::cout << "--------- Render end ----------";
+    std::cout << "--------- Render end ----------\n";
 }
-
-DisplayRenderEngine::DisplayRenderEngine() {}
 
 void DisplayRenderEngine::RenderShape(const shapes::ShapePtr& shape_ptr) {
     std::cout << "Rendering " << shape_ptr->GetInfo() << ": ";
@@ -34,7 +36,6 @@ void DisplayRenderEngine::RenderShape(const shapes::ShapePtr& shape_ptr) {
         if (i < points.size() - 1) {
             std::cout << "->";
         }
-        std::cout << '\n';
     }
 }
 

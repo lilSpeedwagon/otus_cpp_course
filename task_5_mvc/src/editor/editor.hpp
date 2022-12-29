@@ -7,7 +7,7 @@
 
 #include <models/document.hpp>
 #include <storage/storage.hpp>
-#include <render/render.hpp>
+#include <render/display_render.hpp>
 
 
 namespace mvc::controller {
@@ -18,7 +18,7 @@ public:
     /// @brief Constructor.
     /// @param storage_ptr pointer to the documents storage 
     Editor(std::shared_ptr<documents::Storage> storage_ptr)
-        : storage_ptr_(storage_ptr), current_doc_name_(), current_doc_ptr_() {}
+        : current_doc_name_(), current_doc_ptr_(), storage_ptr_(storage_ptr) {}
     ~Editor() {}
 
     /// @brief Closes current document and creates a new one.
@@ -31,8 +31,9 @@ public:
     /// @param name name of the document
     /// @return whether a document found and imported
     bool ImportDocument(const std::string& name) {
-        current_doc_ptr_ = storage_ptr_->GetDocument(name);
-        if (current_doc_ptr_ != nullptr) {
+        auto doc_ptr = storage_ptr_->GetDocument(name);
+        if (doc_ptr != nullptr) {
+            current_doc_ptr_ = doc_ptr;
             current_doc_name_ = name;
             return true;
         }
@@ -52,9 +53,12 @@ public:
     }
     
     /// @brief Closes the current document.
-    void CloseDocument() {
+    /// @returns Whether the current document is closed. 
+    bool CloseDocument() {
+        bool result = current_doc_ptr_ != nullptr;
         current_doc_ptr_.reset();
         current_doc_name_.reset();
+        return result;
     }
 
     /// @brief Gets current document.
