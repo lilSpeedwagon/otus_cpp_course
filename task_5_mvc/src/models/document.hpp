@@ -1,11 +1,9 @@
 #pragma once
 
-#include <algorithm>
 #include <memory>
 #include <unordered_map>
 
 #include <models/shape.hpp>
-#include <render/display_render.hpp>
 #include <utils/typedef.hpp>
 
 
@@ -14,44 +12,24 @@ namespace mvc::documents {
 /// @brief Document containing vector shapes.
 class Document {
 public:
-    /// @brief Constructor.
-    /// @param render_ptr Pointer to the target renderer
-    Document() : id_counter_(0) {}
-    ~Document() {}
+    Document();
+    ~Document();
 
     /// @brief Adds a shape to the document.
     /// @param shape_ptr pointer to the shape
     /// @return id of the added shape
-    shapes::ShapeId AddShape(shapes::ShapePtr shape_ptr) {
-        auto id = GetNextId();
-        shapes_[id] = shape_ptr;
-        OnUpdate();
-        return id;
-    }
+    shapes::ShapeId AddShape(shapes::ShapePtr shape_ptr);
 
     /// @brief Deletes shape from the document.
     /// @param id id of the deletable shape
-    /// @return true if shap is deleted
-    bool DeleteShape(const shapes::ShapeId& id) {
-        if (shapes_.erase(id) != 0) {
-            OnUpdate();
-            return true;
-        }
-        return false;
-    }
+    /// @return true if shape is deleted
+    bool DeleteShape(const shapes::ShapeId& id);
+
+    /// @brief Triggers force rendering of the document.
+    void Render();
 
 private:
-    void OnUpdate() {
-        std::vector<shapes::ShapePtr> shapes_list;
-        shapes_list.reserve(shapes_.size());
-        std::transform(shapes_.begin(), shapes_.end(),
-                       std::back_inserter(shapes_list),
-                       [](const auto& kv) { return kv.second; });
-        render::DisplayRenderEngine::GetInstance()->RenderShapes(shapes_list);
-    }
-    shapes::ShapeId GetNextId() {
-        return shapes::ShapeId{id_counter_++};
-    }
+    shapes::ShapeId GetNextId();
 
     size_t id_counter_;
     std::unordered_map<shapes::ShapeId, shapes::ShapePtr> shapes_;

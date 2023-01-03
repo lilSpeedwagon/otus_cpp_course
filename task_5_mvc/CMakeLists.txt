@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/editor/editor.cpp
     src/models/document.cpp
+    src/models/shapes_factory.cpp
     src/render/display_render.cpp
     src/storage/file_storage.cpp
 )

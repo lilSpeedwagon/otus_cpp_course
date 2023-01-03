@@ -12,6 +12,7 @@ namespace mvc::shapes {
 /// @brief Abstract vector shape.
 class Shape {
 public:
+    Shape() {}
     virtual ~Shape() {}
 
     /// @brief Returns string representation of the shape.
@@ -24,7 +25,6 @@ public:
 
 protected:
     Points points_;
-    Shape() {}
 };
 
 using ShapePtr = std::shared_ptr<Shape>;

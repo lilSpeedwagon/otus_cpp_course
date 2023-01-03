@@ -7,9 +7,9 @@
 
 namespace mvc::documents {
 
-/// @brief Abstract storage for the documents.
+/// @brief Abstract storage for vector documents.
 class Storage {
-public: 
+public:
     Storage() {}
     virtual ~Storage() {}
     

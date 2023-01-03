@@ -24,6 +24,7 @@ void DisplayRenderEngine::RenderShapes(const std::vector<shapes::ShapePtr>& shap
     std::cout << "-------- Render start ---------\n";
     for (const auto& shape : shapes) {
         RenderShape(shape);
+        std::cout << "\n";
     }
     std::cout << "--------- Render end ----------\n";
 }

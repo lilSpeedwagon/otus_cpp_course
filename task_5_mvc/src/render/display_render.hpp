@@ -13,6 +13,7 @@ namespace mvc::render {
 class DisplayRenderEngine : public boost::noncopyable {
 public:
     /// @brief Get an instance of RenderEngine. Based on lazy loading approach.
+    /// Not thread-safe.
     static DisplayRenderEngine* GetInstance();
     
     ~DisplayRenderEngine();
@@ -22,6 +23,9 @@ public:
 
 private:
     DisplayRenderEngine();
+    DisplayRenderEngine(DisplayRenderEngine&&);
+    DisplayRenderEngine&& operator=(DisplayRenderEngine&&);
+
     void RenderShape(const shapes::ShapePtr& shape_ptr);
 
     static DisplayRenderEngine* instance_ptr;

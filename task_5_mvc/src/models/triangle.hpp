@@ -21,6 +21,8 @@ public:
     }
     virtual ~Triangle() {}
 
+    /// @brief Returns string representation of the shape.
+    /// @return 
     std::string GetInfo() const override {
         return "triangle";
     }
