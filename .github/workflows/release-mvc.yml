@@ -1,0 +1,46 @@
+name: MVC pattern release workflow
+
+on:
+  push:
+    branches: [ task_5_mvc ]
+  pull_request:
+    branches: [ task_5_mvc ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install boost
+      run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
+    - name: cmake configure
+      working-directory: ./task_5_mvc
+      run: cmake . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON
+    - name: make build
+      working-directory: ./task_5_mvc
+      run: cmake --build .
+    - name: build package
+      working-directory: ./task_5_mvc
+      run: cmake --build . --target package
+    - name: release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: mvc_${{ github.run_number }}
+        release_name: Release Allocator_${{ github.run_number }}
+        draft: false
+        prerelease: false
+    - name: upload artifacts
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./task_5_mvc/_CPack_Packages/Linux/DEB/mvc-0.0.${{ github.run_number }}-Linux.deb
+        asset_name: mvc-0.0.${{ github.run_number }}-Linux.deb
+        asset_content_type: application/vnd.debian.binary-package
