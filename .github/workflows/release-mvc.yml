@@ -31,7 +31,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: mvc_${{ github.run_number }}
-        release_name: Release Allocator_${{ github.run_number }}
+        release_name: Release Mvc_${{ github.run_number }}
         draft: false
         prerelease: false
     - name: upload artifacts
