@@ -3,8 +3,10 @@
 #include <string>
 #include <vector>
 
+#include <models/circle.hpp>
 #include <models/shape.hpp>
 #include <models/rectangle.hpp>
+#include <models/triangle.hpp>
 
 
 namespace mvc::shapes {
@@ -29,13 +31,25 @@ public:
             throw std::logic_error("invalid params number");
         }
 
+        ShapePtr result_ptr = nullptr;
         if (shape_name == "rect") {
             Point lbc{params[0], params[1]};
             Point rtc{params[2], params[3]};
             auto ptr = std::make_shared<Rectangle>(lbc, rtc);
-            return ShapePtr(std::move(ptr));
+            result_ptr = std::move(ptr);
+        } else if (shape_name == "triangle") {
+            Point fp{params[0], params[1]};
+            Point sp{params[2], params[3]};
+            Point tp{params[4], params[5]};
+            auto ptr = std::make_shared<Triangle>(fp, sp, tp);
+            result_ptr = std::move(ptr);
+        } else if (shape_name == "circle") {
+            Point center{params[0], params[1]};
+            float radius = params[2];
+            auto ptr = std::make_shared<Circle>(center, radius);
+            result_ptr = std::move(ptr);
         }
-        return nullptr;
+        return result_ptr;
     }
 
     /// @brief Returns the vector of parameters required for building Shape.
@@ -57,6 +71,15 @@ private:
                       "left bottom corner Y",
                       "right top corner X",
                       "right top corner Y"}},
+            {"triangle", {"first point x",
+                          "first point y",
+                          "second point x",
+                          "second point y",
+                          "third point x",
+                          "third point y"}},
+            {"circle", {"center x",
+                        "center y",
+                        "radius"}}
         };
     }
 
