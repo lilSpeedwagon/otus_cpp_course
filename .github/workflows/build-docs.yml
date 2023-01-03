@@ -1,4 +1,4 @@
-name: IP print release workflow
+name: Docs release workflow
 
 on:
   push:
