@@ -17,7 +17,22 @@ std::unique_ptr<mvc::controller::Editor> InitEditor() {
 
 void PrintHelp() {
     std::cout << "Commands:\n"
-        << "TODO\n\n";
+        << " * create - create new document\n"
+        << " * open - open previously saved docuemnt by name\n"
+        << " * save - save currently opened document\n"
+        << " * close - close opened shape\n"
+        << " * add-shape - add a new shape\n"
+        << " * delete-shape - delete a shape by id\n"
+        << " * help - show list of available commands\n"
+        << " * shapes - show list of available shapes\n"
+        << " * exit - close programm\n";
+}
+
+void PrintShapes() {
+    std::cout << "Shapes:\n"
+        << " - circle\n"
+        << " - rect\n"
+        << " - triangle\n";
 }
 
 float GetParam(const std::string& name) {
@@ -37,12 +52,14 @@ int main() {
             editor_ptr->CreateDocument();
             auto name = editor_ptr->GetCurrentDocumentName();
             std::cout << "New file is created as \"" << name.value() << "\".\n";
+            editor_ptr->GetCurrentDocument()->Render();
         }},
         {"open", [&editor_ptr]() {
             std::cout << "Document name: ";
             std::string name;
             std::cin >> name;
             if (editor_ptr->ImportDocument(name)) {
+                editor_ptr->GetCurrentDocument()->Render();
                 std::cout << "Document \"" << name << "\" is opened\n";
             } else {
                 std::cout << "Document \"" << name << "\" is not found\n";
@@ -121,12 +138,17 @@ int main() {
         {"help", []() {
             PrintHelp();
         }},
+        {"shapes", []() {
+            PrintShapes();
+        }},
         {"exit", [&exit]() {
             exit = true;
         }},
     };
 
-    std::cout << "Welcome to Cool Vector Graphic Editor 1.0. Type help to show list of available commands.\n";
+    std::cout << "Welcome to Cool Vector Graphic Editor 1.0.\n"
+              << "Type \'help\' to show list of available commands.\n"
+              << "Type \'shapes\' to show list if available shapes.\n";
     while (!exit) {
         auto current_document_name_opt = editor_ptr->GetCurrentDocumentName();
         std::cout << "[" << current_document_name_opt.value_or("-") << "]: ";
