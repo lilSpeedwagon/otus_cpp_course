@@ -73,7 +73,7 @@ public:
     template<size_t IndexSize, size_t DegreeIndex>
     class IteratorProxy {
     public:
-        IteratorProxy(std::shared_ptr<container_type> matrix_ptr,
+        IteratorProxy(std::weak_ptr<container_type> matrix_ptr,
                       const std::array<size_t, IndexSize>& index) 
             : index_(index), matrix_ptr_(matrix_ptr) {}
 
@@ -93,7 +93,7 @@ public:
     template<size_t IndexSize>
     class IteratorProxy<IndexSize, 1> {
     public:
-        IteratorProxy(std::shared_ptr<container_type> matrix_ptr,
+        IteratorProxy(std::weak_ptr<container_type> matrix_ptr,
                       const std::array<size_t, IndexSize>& index) 
             : index_(index), matrix_ptr_(matrix_ptr) {}
 
