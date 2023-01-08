@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="23,63,155,88"/>
+<area shape="rect" id="node2" href="$classmvc_1_1controller_1_1Editor.html" title="Controller of the vector graphics editor." alt="" coords="243,5,389,31"/>
+<area shape="rect" id="node3" href="$classmvc_1_1documents_1_1FileStorage.html" title="Documents storage based on the filesystem. File system is mocked with std::unordered_map for testing ..." alt="" coords="221,120,411,145"/>
+<area shape="rect" id="node4" href="$classmvc_1_1render_1_1DisplayRenderEngine.html" title="Engine for rendering shapes to the display. Singleton class." alt="" coords="227,55,405,95"/>
+<area shape="rect" id="node5" href="$classmvc_1_1documents_1_1Storage.html" title="Abstract storage for vector documents." alt="" coords="5,120,173,145"/>
+</map>
