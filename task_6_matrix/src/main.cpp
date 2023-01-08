@@ -7,9 +7,10 @@ int main() {
     containers::InfiniteMatrix<int, -1, 2> matrix;
     
     std::cout << matrix[0][0] << '\n';
+    std::cout << "size " << matrix.size() << '\n';
     matrix[0][0] = 1;
     std::cout << matrix[0][0] << '\n';
-    std::cout << matrix.size() << '\n';
+    std::cout << "size " << matrix.size() << '\n';
     matrix[1][1] = 2;
     std::cout << matrix[1][1] << '\n';
 
