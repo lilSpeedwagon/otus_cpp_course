@@ -10,6 +10,9 @@ int main() {
     std::cout << "Enter bulk block size: ";
     size_t block_size;
     std::cin >> block_size;
+    if (block_size < 1) {
+        throw std::runtime_error("invalid block size");
+    }
 
     using command_type = bulk::CommandsHandler::command_type;
     auto static_container_ptr = 
