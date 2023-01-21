@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+
+
 namespace bulk {
 
 /// @brief Bulk container interface. Provides base functions to store
@@ -13,7 +16,7 @@ public:
 
     /// @brief Add new item to container.
     /// @return whether it is possible to add more items to container
-    virtual bool Add() = 0;
+    virtual bool Add(const T& item) = 0;
 
     /// @brief Clear the container
     virtual void Clear() = 0;

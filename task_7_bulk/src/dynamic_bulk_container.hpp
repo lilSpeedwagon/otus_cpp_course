@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include <src/bulk_container.hpp>
+#include <bulk_container.hpp>
 
 
 namespace bulk {
@@ -25,7 +25,7 @@ public:
     std::vector<T> GetItems() const override {
         std::vector<T> result;
         std::copy(container_.begin(), container_.end(), std::back_inserter(result));
-        return container_;
+        return result;
     }
 
     size_t Size() const override {

@@ -3,7 +3,7 @@
 #include <exception>
 #include <vector>
 
-#include <src/bulk_container.hpp>
+#include <bulk_container.hpp>
 
 
 namespace bulk {
@@ -18,7 +18,7 @@ public:
     ~StaticBulkContainer() {}
 
     bool Add(const T& item) {
-        if (item.size() >= bulk_size_) {
+        if (IsFull()) {
             throw std::runtime_error("bulk size exceeded");
         }
         container_.push_back(item);
@@ -43,7 +43,7 @@ public:
     }
 
     bool IsFull() const {
-        return container_.size() == bulk_size_;
+        return container_.size() >= bulk_size_;
     }
 
 private:
