@@ -10,6 +10,8 @@ find_package(Boost COMPONENTS system filesystem regex REQUIRED)
 add_executable(${PROJECT_NAME}
     src/file_reader/file_reader.cpp
     src/file_scanner/file_scanner.cpp
+    src/hash/factory.cpp
+    src/hash/md5.cpp
     src/main.cpp
 )
 

@@ -3,13 +3,12 @@
 
 namespace bayan::hash {
 
-template<typename T>
 class HashProcessor {
 public:
     HashProcessor() {}
     virtual ~HashProcessor() {}
 
-    virtual size_t Hash(const T& data) const = 0;
+    virtual size_t Hash(const std::string& data) const = 0;
 };
 
 // TODO
