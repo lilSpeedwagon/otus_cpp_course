@@ -59,7 +59,7 @@ private:
         
         depth++;
         for (const auto& it : boost::filesystem::directory_iterator(path)) {
-            const auto path = it.path(); 
+            const auto path = it.path();
             if (boost::filesystem::is_directory(path)) {
                 ScanDirectory(path, depth);
             } else {
