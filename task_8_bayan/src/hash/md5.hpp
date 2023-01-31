@@ -1,5 +1,10 @@
 #pragma once
 
+#include <cstring>
+
+#include <openssl/md5.h>
+
+#include <hash/hash.hpp>
 #include <hash/hash_processor.hpp>
 
 
@@ -10,8 +15,17 @@ public:
     Md5HashProcessor() {}
     virtual ~Md5HashProcessor() {}
 
-    size_t Hash(const std::string& data) const override {
-        return 0;
+    hash::Hash Hash(const std::string& data) const override {
+        constexpr size_t hash_size = MD5_DIGEST_LENGTH;
+        unsigned char buffer[hash_size];
+        MD5(reinterpret_cast<const unsigned char*>(data.c_str()), data.size(), buffer);
+
+        hash::Hash result;
+        result.reserve(hash_size);
+        for (size_t i = 0; i < hash_size; i++) {
+            result.push_back(buffer[i]);
+        }
+        return result;
     }
 };
 

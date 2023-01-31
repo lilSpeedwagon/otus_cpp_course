@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+
+#include <hash/hash.hpp>
+
 
 namespace bayan::hash {
 
@@ -8,11 +12,7 @@ public:
     HashProcessor() {}
     virtual ~HashProcessor() {}
 
-    virtual size_t Hash(const std::string& data) const = 0;
+    virtual Hash Hash(const std::string& data) const = 0;
 };
-
-// TODO
-// create a factory returning a poitner to the same hasher every time ?
-// lazy init with some hash type string
 
 } // namespace bayan::hash

@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.2)
 
 set(PATCH_VERSION "1" CACHE INTERNAL "Patch version")
 set(PROJECT_VERSION 0.0.${PATCH_VERSION})
+set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 project(bayan VERSION ${PROJECT_VERSION})
 
 find_package(Boost COMPONENTS system filesystem regex REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 add_executable(${PROJECT_NAME}
     src/file_reader/file_reader.cpp
@@ -24,7 +26,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
-target_link_libraries(${PROJECT_NAME} Boost::filesystem Boost::regex)
+target_link_libraries(${PROJECT_NAME} 
+    Boost::filesystem
+    Boost::regex
+    OpenSSL::Crypto
+)
 
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE
