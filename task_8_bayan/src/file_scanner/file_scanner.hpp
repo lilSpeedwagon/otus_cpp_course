@@ -8,20 +8,19 @@
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
-#include <file_reader/file_reader.hpp>
+#include <utils.hpp>
 
 
 namespace bayan::file {
 
 class FileScanner {
 public:
-    FileScanner(
-        const std::vector<boost::filesystem::path>& include_dirs,
-        const std::vector<boost::filesystem::path>& exclude_dirs,
-        size_t max_scan_depth, size_t min_file_size,
-        const std::vector<std::string>& file_name_wildcards)
-        : include_dirs_(include_dirs), max_scan_depth_(max_scan_depth),
-          min_file_size_(static_cast<uintmax_t(min_file_size)) {
+    FileScanner(const std::vector<boost::filesystem::path>& include_dirs,
+                const std::vector<boost::filesystem::path>& exclude_dirs,
+                size_t max_scan_depth, size_t min_file_size,
+                const std::vector<std::string>& file_name_wildcards)
+        : include_dirs_(include_dirs), exclude_dirs_(), max_scan_depth_(max_scan_depth),
+          min_file_size_(static_cast<uintmax_t>(min_file_size)) {
         exclude_dirs_.reserve(exclude_dirs.size());
         for (const auto& dir : exclude_dirs) {
             exclude_dirs_.insert(dir);
@@ -47,18 +46,18 @@ public:
         scanned_files_.clear();
     }
 
-    std::vector<FileHashReader> GetScannedFiles() const {
+    std::vector<boost::filesystem::path> GetScannedFiles() const {
         return scanned_files_;
     }
 
 private:
-    void ScanDirectory(const boost::filesystem::path& path, size_t depth) {
-        if (exclude_dirs_.count(path) == 0 || depth > max_scan_depth_) {
+    void ScanDirectory(const boost::filesystem::path& dir_path, size_t depth) {
+        if (exclude_dirs_.count(dir_path) != 0 || depth > max_scan_depth_) {
             return;
         }
         
         depth++;
-        for (const auto& it : boost::filesystem::directory_iterator(path)) {
+        for (const auto& it : boost::filesystem::directory_iterator(dir_path)) {
             const auto path = it.path();
             if (boost::filesystem::is_directory(path)) {
                 ScanDirectory(path, depth);
@@ -71,17 +70,16 @@ private:
     void ScanFile(const boost::filesystem::path& path) {
         auto size = boost::filesystem::file_size(path);
         const auto match_lambda = [path = path.string()](const auto& wc) {
-            return boost::regex_match(path.string(), wc);
-        }
+            return boost::regex_match(path, wc);
+        };
 
         if (std::find_if(file_name_wildcards_.begin(), file_name_wildcards_.end(),
-                         match_lambda) == file_name_wildcards_.end() ||
+                         match_lambda) != file_name_wildcards_.end() ||
             size < min_file_size_) {
             return;
         }
 
-        auto file_reader = factory.Create(path);
-        scanned_files_.push_back(std::move(file_reader));
+        scanned_files_.push_back(path);
     }
 
     std::vector<boost::filesystem::path> include_dirs_;
@@ -90,8 +88,7 @@ private:
     uintmax_t min_file_size_;
     std::vector<boost::regex> file_name_wildcards_;
 
-    FileHashReaderFactory factory_;
-    std::vector<FileHashReader> scanned_files_;
+    std::vector<boost::filesystem::path> scanned_files_;
 };
 
 } // bayan::file
