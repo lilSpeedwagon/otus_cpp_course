@@ -1,4 +1,5 @@
 #pragma once
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"  // allow usage of MD5
 
 #include <cstring>
 
@@ -15,7 +16,7 @@ public:
     Md5HashProcessor() {}
     virtual ~Md5HashProcessor() {}
 
-    hash::Hash Hash(const std::string& data) const override {
+    hash::Hash GetHash(const std::string& data) const override {
         constexpr size_t hash_size = MD5_DIGEST_LENGTH;
         unsigned char buffer[hash_size];
         MD5(reinterpret_cast<const unsigned char*>(data.c_str()), data.size(), buffer);
