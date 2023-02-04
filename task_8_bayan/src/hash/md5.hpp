@@ -21,12 +21,14 @@ public:
         unsigned char buffer[hash_size];
         MD5(reinterpret_cast<const unsigned char*>(data.c_str()), data.size(), buffer);
 
-        hash::Hash result;
-        result.reserve(hash_size);
-        for (size_t i = 0; i < hash_size; i++) {
-            result.push_back(buffer[i]);
-        }
-        return result;
+        // hash::Hash result;
+        // result.reserve(hash_size);
+        // for (size_t i = 0; i < hash_size; i++) {
+        //     result.push_back(buffer[i]);
+        // }
+        // return result;
+
+        return 0;
     }
 };
 

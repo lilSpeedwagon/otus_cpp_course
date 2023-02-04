@@ -9,7 +9,9 @@ int main() {
         "./",
     };
     std::vector<boost::filesystem::path> exclude = {};
-    std::vector<std::string> wildcards = {};
+    std::vector<std::string> wildcards = {
+        ".*"
+    };
 
     bayan::file::FileScanner scanner(include, exclude, 10, 0, wildcards);
     scanner.Scan();
