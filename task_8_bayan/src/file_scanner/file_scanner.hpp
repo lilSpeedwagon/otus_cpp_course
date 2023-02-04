@@ -74,7 +74,7 @@ private:
         };
 
         if (std::find_if(file_name_wildcards_.begin(), file_name_wildcards_.end(),
-                         match_lambda) != file_name_wildcards_.end() ||
+                         match_lambda) == file_name_wildcards_.end() ||
             size < min_file_size_) {
             return;
         }
