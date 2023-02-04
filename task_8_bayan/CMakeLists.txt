@@ -10,6 +10,7 @@ find_package(Boost COMPONENTS system filesystem regex REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 add_executable(${PROJECT_NAME}
+    src/file_reader/factory.cpp
     src/file_reader/file_reader.cpp
     src/file_scanner/file_scanner.cpp
     src/hash/factory.cpp
