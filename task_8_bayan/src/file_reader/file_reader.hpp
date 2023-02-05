@@ -16,7 +16,7 @@ public:
     FileHashReader(
         const boost::filesystem::path& path,
         std::shared_ptr<hash::HashProcessor> hasher_ptr,
-        size_t block_size) 
+        size_t block_size)
         : path_(path), hasher_ptr_(hasher_ptr), block_size_(block_size),
           file_size_(boost::filesystem::file_size(path_)), blocks_loaded_(0),
           current_hash_(), is_full_hash_(false) {}
@@ -24,6 +24,14 @@ public:
 
     bool operator==(FileHashReader& other) {
         return Compare(other);
+    }
+
+    hash::Hash GetHash() const {
+        return current_hash_;
+    }
+
+    boost::filesystem::path GetPath() const {
+        return path_;
     }
 
 private:
@@ -38,7 +46,7 @@ private:
         boost::filesystem::ifstream lhs_stream(path_);
         boost::filesystem::ifstream rhs_stream(other.path_);
 
-        // align loaded blocks
+        // align loaded blocks in both files
         while (blocks_loaded_ != other.blocks_loaded_) {
             if (blocks_loaded_ < other.blocks_loaded_) {
                 ReadNextBlock(lhs_stream);
