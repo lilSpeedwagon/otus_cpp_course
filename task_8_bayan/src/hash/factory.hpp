@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <stdexcept>
-#include <string>
 
 #include <boost/noncopyable.hpp>
 
@@ -24,7 +23,6 @@ public:
 private:
     void Swap(HashProcessorFactory&& other);
 
-    static constexpr const char* kHashTypeMd5 = "md5";
     static constexpr const char* kHashTypeDefault = "default";
 
     std::string hash_type_;
