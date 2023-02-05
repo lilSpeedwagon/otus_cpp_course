@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <exception>
 #include <string>
 #include <vector>
@@ -15,16 +16,20 @@ namespace bayan::file {
 
 class FileScanner {
 public:
-    FileScanner(const std::vector<boost::filesystem::path>& include_dirs,
-                const std::vector<boost::filesystem::path>& exclude_dirs,
-                size_t max_scan_depth, size_t min_file_size,
-                const std::vector<std::string>& file_name_wildcards)
-        : include_dirs_(include_dirs), exclude_dirs_(), max_scan_depth_(max_scan_depth),
+    FileScanner(const std::vector<std::string>& include_dirs, const std::vector<std::string>& exclude_dirs,
+                const std::vector<std::string>& file_name_wildcards, size_t max_scan_depth, size_t min_file_size)
+        : include_dirs_(), exclude_dirs_(), max_scan_depth_(max_scan_depth),
           min_file_size_(static_cast<uintmax_t>(min_file_size)) {
+        // include
+        include_dirs_.reserve(include_dirs.size());
+        std::transform(include_dirs.begin(), include_dirs.end(), std::back_inserter(include_dirs_),
+                       [](const auto& str) { return boost::filesystem::path(str); });
+        // exclude
         exclude_dirs_.reserve(exclude_dirs.size());
         for (const auto& dir : exclude_dirs) {
             exclude_dirs_.insert(dir);
         }
+        // wildcards
         file_name_wildcards_.reserve(file_name_wildcards.size());
         for (const auto& wc : file_name_wildcards) {
             file_name_wildcards_.emplace_back(wc);
@@ -84,9 +89,9 @@ private:
 
     std::vector<boost::filesystem::path> include_dirs_;
     std::unordered_set<boost::filesystem::path> exclude_dirs_;
+    std::vector<boost::regex> file_name_wildcards_;
     size_t max_scan_depth_;
     uintmax_t min_file_size_;
-    std::vector<boost::regex> file_name_wildcards_;
 
     std::vector<boost::filesystem::path> scanned_files_;
 };

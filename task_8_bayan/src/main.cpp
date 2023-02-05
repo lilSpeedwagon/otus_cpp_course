@@ -1,24 +1,78 @@
 #include <iostream>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/program_options.hpp>
+#include <boost/tokenizer.hpp>
+
 #include <hash/factory.hpp>
 #include <file_comparator/file_comparator.hpp>
 #include <file_reader/factory.hpp>
 #include <file_scanner/file_scanner.hpp>
 
 
-int main() {
-    std::string hash_type = "default";
-    size_t block_size = 1024;
+namespace {
 
-    std::vector<boost::filesystem::path> include = {
-        "./test",
-    };
-    std::vector<boost::filesystem::path> exclude = {};
-    std::vector<std::string> wildcards = {
-        ".*"
-    };
+namespace boost_options = boost::program_options;
 
-    bayan::file::FileScanner scanner(include, exclude, 10, 0, wildcards);
+void ShowHelp(const boost_options::options_description& options) {
+    std::cout << options;
+}
+
+boost_options::options_description PrepareOptions() {
+    boost_options::options_description options("options");
+    options.add_options()
+        ("help", "show help message")
+        ("hash", boost_options::value<std::string>()->default_value("default"),
+         "defines hash algorithm")
+        ("block-size", boost_options::value<size_t>()->default_value(1024),
+         "size of file block to read")
+        ("include", boost_options::value<std::string>()->default_value("./"), 
+         "list of directories to search delimited by space")
+        ("exclude", boost_options::value<std::string>()->default_value(""), 
+         "list of directories to exclude from search delimited by space")
+        ("wildcards", boost_options::value<std::string>()->default_value(".*"),
+         "file name wildcards separated by space")
+        ("depth", boost_options::value<size_t>()->default_value(999999),
+         "depth of search")
+        ("min-size", boost_options::value<size_t>()->default_value(0),
+         "minimal file size to compare");
+    return options;
+}
+
+boost_options::variables_map ParseCommandLine(
+    const boost_options::options_description& options, int argc, char** argv) {
+    boost_options::variables_map variables;
+    boost_options::store(boost_options::parse_command_line(argc, argv, options), variables);
+    boost_options::notify(variables);
+    return variables;
+}
+
+std::vector<std::string> Tokenize(const std::string& data) {
+    std::vector<std::string> result;
+    boost::algorithm::split(result, data, boost::is_any_of(" "));
+    return result;
+}
+
+} // namespace
+
+int main(int argc, char** argv) {
+    auto options = PrepareOptions();
+    auto variables = ParseCommandLine(options, argc, argv);
+    if (variables.count("help")) {
+        ShowHelp(options);
+        return 0;
+    }
+
+    auto include = Tokenize(variables["include"].as<std::string>());
+    auto exclude = Tokenize(variables["exclude"].as<std::string>());
+    auto wildcards = Tokenize(variables["wildcards"].as<std::string>());
+
+    auto hash_type = variables["hash"].as<std::string>();
+    auto block_size = variables["block-size"].as<size_t>();
+    auto depth = variables["depth"].as<size_t>();
+    auto min_size = variables["min-size"].as<size_t>();
+
+    bayan::file::FileScanner scanner(include, exclude, wildcards, depth, min_size);
     scanner.Scan();
     auto files = scanner.GetScannedFiles();
     std::cout << "files:\n";

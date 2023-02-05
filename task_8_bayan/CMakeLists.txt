@@ -6,7 +6,7 @@ set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 project(bayan VERSION ${PROJECT_VERSION})
 
-find_package(Boost COMPONENTS system filesystem regex REQUIRED)
+find_package(Boost COMPONENTS system filesystem regex program_options REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 add_executable(${PROJECT_NAME}
@@ -31,6 +31,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_link_libraries(${PROJECT_NAME} 
     Boost::filesystem
+    Boost::program_options
     Boost::regex
     OpenSSL::Crypto
 )
