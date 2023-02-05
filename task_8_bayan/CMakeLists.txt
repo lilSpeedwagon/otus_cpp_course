@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME}
     src/file_reader/factory.cpp
     src/file_reader/file_reader.cpp
     src/file_scanner/file_scanner.cpp
+    src/hash/default.cpp
     src/hash/factory.cpp
     src/hash/md5.cpp
     src/main.cpp

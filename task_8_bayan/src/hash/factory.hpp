@@ -25,6 +25,7 @@ private:
     void Swap(HashProcessorFactory&& other);
 
     static constexpr const char* kHashTypeMd5 = "md5";
+    static constexpr const char* kHashTypeDefault = "default";
 
     std::string hash_type_;
     std::shared_ptr<HashProcessor> hash_ptr_lazy_;

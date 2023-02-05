@@ -2,6 +2,7 @@
 
 #include <exception>
 
+#include <hash/default.hpp>
 #include <hash/md5.hpp>
 
 
@@ -9,7 +10,8 @@ namespace bayan::hash {
 
 HashProcessorFactory::HashProcessorFactory(const std::string& hash_type) 
     : hash_ptr_lazy_(nullptr) {
-    if (hash_type != kHashTypeMd5) {
+    if (hash_type != kHashTypeMd5 &&
+        hash_type != kHashTypeDefault) {
         throw std::runtime_error("unknown hash type");
     }
     hash_type_ = hash_type;
@@ -29,6 +31,9 @@ HashProcessorFactory& HashProcessorFactory::operator=(HashProcessorFactory&& oth
 std::shared_ptr<HashProcessor> HashProcessorFactory::Create() {
     if (hash_ptr_lazy_ != nullptr) {
         return hash_ptr_lazy_;
+    }
+    if (hash_type_ == kHashTypeDefault) {
+        hash_ptr_lazy_ = std::make_shared<DefaultHashProcessor>();
     }
     if (hash_type_ == kHashTypeMd5) {
         hash_ptr_lazy_ = std::make_shared<Md5HashProcessor>();

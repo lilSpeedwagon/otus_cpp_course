@@ -7,7 +7,7 @@
 
 
 int main() {
-
+    std::string hash_type = "default";
     size_t block_size = 1024;
 
     std::vector<boost::filesystem::path> include = {
@@ -26,7 +26,7 @@ int main() {
         std::cout << f << '\n';
     }
 
-    bayan::hash::HashProcessorFactory hash_factory("default");
+    bayan::hash::HashProcessorFactory hash_factory(hash_type);
     bayan::file::FileHashReaderFactory hash_reader_factory(std::move(hash_factory), block_size);
     bayan::file::FileComparator comparator(std::move(hash_reader_factory));
     auto result = comparator.Compare(files);
