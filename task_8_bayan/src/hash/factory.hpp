@@ -24,6 +24,7 @@ private:
     void Swap(HashProcessorFactory&& other);
 
     static constexpr const char* kHashTypeDefault = "default";
+    static constexpr const char* kHashTypeRs = "rs";
 
     std::string hash_type_;
     std::shared_ptr<HashProcessor> hash_ptr_lazy_;

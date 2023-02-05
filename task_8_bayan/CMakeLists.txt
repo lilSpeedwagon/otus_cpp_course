@@ -16,6 +16,7 @@ add_executable(${PROJECT_NAME}
     src/file_scanner/file_scanner.cpp
     src/hash/default.cpp
     src/hash/factory.cpp
+    src/hash/rs.cpp
     src/main.cpp
 )
 
