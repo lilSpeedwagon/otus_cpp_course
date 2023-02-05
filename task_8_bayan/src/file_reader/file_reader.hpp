@@ -73,7 +73,7 @@ private:
         stream.read(buffer.data(), block_size_);
 
         auto hash = hasher_ptr_->GetHash(buffer);
-        hash::HashCombine(current_hash_, hash);
+        current_hash_ = hash::HashCombine(current_hash_, hash);
         blocks_loaded_++;
 
         if (cursor + buffer_size >= file_size_) {

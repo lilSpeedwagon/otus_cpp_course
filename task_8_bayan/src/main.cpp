@@ -11,7 +11,7 @@ int main() {
     size_t block_size = 1024;
 
     std::vector<boost::filesystem::path> include = {
-        "./",
+        "./test",
     };
     std::vector<boost::filesystem::path> exclude = {};
     std::vector<std::string> wildcards = {
@@ -31,6 +31,7 @@ int main() {
     bayan::file::FileComparator comparator(std::move(hash_reader_factory));
     auto result = comparator.Compare(files);
 
+    std::cout << "results:\n";
     for (const auto& [hash, file_group] : result) {
         std::cout << hash << '\n';
         for (const auto& path : file_group) {
