@@ -15,7 +15,7 @@ namespace {
 namespace boost_options = boost::program_options;
 
 void ShowHelp(const boost_options::options_description& options) {
-    std::cout << options;
+    std::cout << "bayan: search for duplicate files by their hashes\n" << options;
 }
 
 boost_options::options_description PrepareOptions() {
@@ -23,7 +23,7 @@ boost_options::options_description PrepareOptions() {
     options.add_options()
         ("help", "show help message")
         ("hash", boost_options::value<std::string>()->default_value("default"),
-         "defines hash algorithm")
+         "defines hash algorithm (define, rs)")
         ("block-size", boost_options::value<size_t>()->default_value(1024),
          "size of file block to read")
         ("include", boost_options::value<std::string>()->default_value("./"), 
@@ -75,19 +75,13 @@ int main(int argc, char** argv) {
     bayan::file::FileScanner scanner(include, exclude, wildcards, depth, min_size);
     scanner.Scan();
     auto files = scanner.GetScannedFiles();
-    std::cout << "files:\n";
-    for (const auto& f : files) {
-        std::cout << f << '\n';
-    }
 
     bayan::hash::HashProcessorFactory hash_factory(hash_type);
     bayan::file::FileHashReaderFactory hash_reader_factory(std::move(hash_factory), block_size);
     bayan::file::FileComparator comparator(std::move(hash_reader_factory));
     auto result = comparator.Compare(files);
 
-    std::cout << "results:\n";
-    for (const auto& [hash, file_group] : result) {
-        std::cout << hash << '\n';
+    for (const auto& [_, file_group] : result) {
         for (const auto& path : file_group) {
             std::cout << path << '\n';
         }

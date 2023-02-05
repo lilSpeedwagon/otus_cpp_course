@@ -14,20 +14,3 @@ public:
 };
 
 } // namespace std
-
-namespace bayan::utils {
-
-class ScopeGuarg {
-public:
-    using CallbackT = std::function<void(void)>;
-
-    ScopeGuarg(CallbackT callback) : callback_(callback) {}
-    ~ScopeGuarg() {
-        callback_();
-    }
-
-private:
-    CallbackT callback_;
-};
-
-} // namespace bayan::utils

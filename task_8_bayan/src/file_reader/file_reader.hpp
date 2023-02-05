@@ -11,79 +11,43 @@
 
 namespace bayan::file {
 
-class FileHashReader {
+/// @brief File wrapper to compare the content of files by its hash.
+/// Hash calculation is lazy and is performed only if it is required for
+/// comparison.
+class FileHashReader : public boost::noncopyable {
 public:
-    FileHashReader(
-        const boost::filesystem::path& path,
-        std::shared_ptr<hash::HashProcessor> hasher_ptr,
-        size_t block_size)
-        : path_(path), hasher_ptr_(hasher_ptr), block_size_(block_size),
-          file_size_(boost::filesystem::file_size(path_)), blocks_loaded_(0),
-          current_hash_(), is_full_hash_(false) {}
-    ~FileHashReader() {}
+    /// @brief Constructor
+    /// @param path file path
+    /// @param hasher_ptr pointer to the HashProcessor
+    /// @param block_size size of file content buffer
+    FileHashReader(const boost::filesystem::path& path,
+                   std::shared_ptr<hash::HashProcessor> hasher_ptr,
+                   size_t block_size);
+    FileHashReader(FileHashReader&& other);
+    ~FileHashReader() = default;
 
-    bool operator==(FileHashReader& other) {
-        return Compare(other);
-    }
+    FileHashReader& operator=(FileHashReader&& other);
 
-    hash::Hash GetHash() const {
-        return current_hash_;
-    }
+    /// @brief Compares two files by their hashes. If some differences found or
+    /// if size of files are different - further hash calculation is omitted. 
+    /// @param other file to compare with
+    /// @return whether the file contents are equal
+    bool operator==(FileHashReader& other);
 
-    boost::filesystem::path GetPath() const {
-        return path_;
-    }
+    /// @brief Returns hash of loaded file content
+    hash::Hash GetHash() const;
+
+    /// @brief Returns file path
+    boost::filesystem::path GetPath() const;
 
 private:
-    bool Compare(FileHashReader& other) {
-        if (file_size_ != other.file_size_) {
-            return false;
-        }
-        if (is_full_hash_ && other.is_full_hash_) {
-            return current_hash_ == other.current_hash_;
-        }
+    void Swap(FileHashReader&& other);
+    bool Compare(FileHashReader& other);
+    void ReadNextBlock(boost::filesystem::ifstream& stream);
 
-        boost::filesystem::ifstream lhs_stream(path_);
-        boost::filesystem::ifstream rhs_stream(other.path_);
-
-        // align loaded blocks in both files
-        while (blocks_loaded_ != other.blocks_loaded_) {
-            if (blocks_loaded_ < other.blocks_loaded_) {
-                ReadNextBlock(lhs_stream);
-            } else {
-                other.ReadNextBlock(rhs_stream);
-            }
-        }
-
-        // calculate hashes block-by-block until some differences or EOF
-        while (!is_full_hash_ && current_hash_ == other.current_hash_) {
-            ReadNextBlock(lhs_stream);
-            other.ReadNextBlock(rhs_stream);
-        }
-        return current_hash_ == other.current_hash_;
-    }
-
-    void ReadNextBlock(boost::filesystem::ifstream& stream) {
-        size_t cursor = block_size_ * blocks_loaded_;
-        size_t buffer_size = std::min(block_size_, file_size_ - cursor);
-
-        std::string buffer;
-        buffer.resize(buffer_size);
-        stream.seekg(cursor);
-        stream.read(buffer.data(), block_size_);
-
-        auto hash = hasher_ptr_->GetHash(buffer);
-        current_hash_ = hash::HashCombine(current_hash_, hash);
-        blocks_loaded_++;
-
-        if (cursor + buffer_size >= file_size_) {
-            is_full_hash_ = true;
-        }
-    }
-
-    const boost::filesystem::path path_;
-    const std::shared_ptr<hash::HashProcessor> hasher_ptr_;
-    const size_t block_size_;
+    boost::filesystem::path path_;
+    std::shared_ptr<hash::HashProcessor> hasher_ptr_;
+    size_t block_size_;
 
     size_t file_size_;
     size_t blocks_loaded_;

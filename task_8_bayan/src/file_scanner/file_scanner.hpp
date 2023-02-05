@@ -1,12 +1,11 @@
 #pragma once
 
-#include <algorithm>
-#include <exception>
 #include <string>
 #include <vector>
 #include <unordered_set>
 
 #include <boost/filesystem.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/regex.hpp>
 
 #include <utils.hpp>
@@ -14,78 +13,34 @@
 
 namespace bayan::file {
 
-class FileScanner {
+/// @brief Scanner for searching files with specified preferences.
+class FileScanner : public boost::noncopyable {
 public:
+    /// @brief Constructor
+    /// @param include_dirs directories to search into 
+    /// @param exclude_dirs directories to exclude from search
+    /// @param file_name_wildcards list of file masks to search 
+    /// @param max_scan_depth max directory search depth
+    /// @param min_file_size min size of file to search
     FileScanner(const std::vector<std::string>& include_dirs, const std::vector<std::string>& exclude_dirs,
-                const std::vector<std::string>& file_name_wildcards, size_t max_scan_depth, size_t min_file_size)
-        : include_dirs_(), exclude_dirs_(), max_scan_depth_(max_scan_depth),
-          min_file_size_(static_cast<uintmax_t>(min_file_size)) {
-        // include
-        include_dirs_.reserve(include_dirs.size());
-        std::transform(include_dirs.begin(), include_dirs.end(), std::back_inserter(include_dirs_),
-                       [](const auto& str) { return boost::filesystem::path(str); });
-        // exclude
-        exclude_dirs_.reserve(exclude_dirs.size());
-        for (const auto& dir : exclude_dirs) {
-            exclude_dirs_.insert(dir);
-        }
-        // wildcards
-        file_name_wildcards_.reserve(file_name_wildcards.size());
-        for (const auto& wc : file_name_wildcards) {
-            file_name_wildcards_.emplace_back(wc);
-        }
-    }
-    
-    ~FileScanner() {}
+                const std::vector<std::string>& file_name_wildcards, size_t max_scan_depth, size_t min_file_size);
+    ~FileScanner() = default;
 
-    void Scan() {
-        for (const auto& dir : include_dirs_) {
-            if (!boost::filesystem::is_directory(dir)) {
-                throw std::runtime_error(dir.string() + " is not a directory");
-            }
-            ScanDirectory(dir, 0);
-        }
-    }
-    
-    void Reset() {
-        scanned_files_.clear();
-    }
+    /// @brief Perform file search according to specified params.
+    void Scan();
 
-    std::vector<boost::filesystem::path> GetScannedFiles() const {
-        return scanned_files_;
-    }
+    /// @brief Drop previous search results.
+    void Reset();
+
+    /// @brief Returns the results of search.
+    std::vector<boost::filesystem::path> GetScannedFiles() const;
 
 private:
-    void ScanDirectory(const boost::filesystem::path& dir_path, size_t depth) {
-        if (exclude_dirs_.count(dir_path) != 0 || depth > max_scan_depth_) {
-            return;
-        }
-        
-        depth++;
-        for (const auto& it : boost::filesystem::directory_iterator(dir_path)) {
-            const auto path = it.path();
-            if (boost::filesystem::is_directory(path)) {
-                ScanDirectory(path, depth);
-            } else {
-                ScanFile(path);
-            }
-        }
-    }
+    FileScanner(FileScanner&&);
+    FileScanner& operator=(FileScanner&&);
 
-    void ScanFile(const boost::filesystem::path& path) {
-        auto size = boost::filesystem::file_size(path);
-        const auto match_lambda = [path = path.string()](const auto& wc) {
-            return boost::regex_match(path, wc);
-        };
-
-        if (std::find_if(file_name_wildcards_.begin(), file_name_wildcards_.end(),
-                         match_lambda) == file_name_wildcards_.end() ||
-            size < min_file_size_) {
-            return;
-        }
-
-        scanned_files_.push_back(path);
-    }
+    void ScanDirectory(const boost::filesystem::path& dir_path, size_t depth);
+    void ScanFile(const boost::filesystem::path& path);
 
     std::vector<boost::filesystem::path> include_dirs_;
     std::unordered_set<boost::filesystem::path> exclude_dirs_;

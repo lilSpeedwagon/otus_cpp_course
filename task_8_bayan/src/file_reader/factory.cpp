@@ -11,8 +11,6 @@ FileHashReaderFactory::FileHashReaderFactory(FileHashReaderFactory&& other)
     : hash_factory_(std::move(other.hash_factory_)),
       block_size_(std::move(other.block_size_)) {}
 
-FileHashReaderFactory::~FileHashReaderFactory() {}
-
 FileHashReaderFactory& FileHashReaderFactory::operator=(
     FileHashReaderFactory&& other) {
     std::swap(hash_factory_, other.hash_factory_);
