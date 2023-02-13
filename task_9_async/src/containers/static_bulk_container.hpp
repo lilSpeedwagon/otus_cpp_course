@@ -1,12 +1,12 @@
 #pragma once
 
-#include <exception>
+#include <stdexcept>
 #include <vector>
 
 #include <containers/bulk_container.hpp>
 
 
-namespace bulk {
+namespace async::containers {
 
 template <typename T>
 class StaticBulkContainer : public BulkContainer<T>{
@@ -15,7 +15,7 @@ public:
         : bulk_size_(bulk_size) {
         Init();
     }
-    ~StaticBulkContainer() {}
+    virtual ~StaticBulkContainer() = default;
 
     bool Add(const T& item) {
         if (IsFull()) {
@@ -55,4 +55,4 @@ private:
     std::vector<T> container_;
 };
 
-} // namespace bulk
+} // namespace async::containers

@@ -5,13 +5,13 @@
 #include <containers/bulk_container.hpp>
 
 
-namespace bulk {
+namespace async::containers {
 
 template <typename T>
-class DynamicBulkContainer : public bulk::BulkContainer<T> {
+class DynamicBulkContainer : public BulkContainer<T> {
 public:
-    DynamicBulkContainer() {}
-    ~DynamicBulkContainer() {}
+    DynamicBulkContainer() = default;
+    virtual ~DynamicBulkContainer() = default;
 
     bool Add(const T& item) override {
         container_.push_back(item);
@@ -40,4 +40,4 @@ private:
     std::list<T> container_;
 };
 
-} // namespace bulk
+} // namespace async::containers

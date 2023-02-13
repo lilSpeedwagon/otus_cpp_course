@@ -14,13 +14,13 @@ int main() {
         throw std::runtime_error("invalid block size");
     }
 
-    using command_type = bulk::CommandsHandler::command_type;
+    using command_type = async::CommandsHandler::command_type;
     auto static_container_ptr = 
-        std::make_shared<bulk::StaticBulkContainer<command_type>>(block_size);
+        std::make_shared<async::containers::StaticBulkContainer<command_type>>(block_size);
     auto dynamic_container_ptr = 
-        std::make_shared<bulk::DynamicBulkContainer<command_type>>();
+        std::make_shared<async::containers::DynamicBulkContainer<command_type>>();
 
-    bulk::CommandsHandler handler(
+    async::CommandsHandler handler(
         std::cin, std::cout, static_container_ptr, dynamic_container_ptr);
     handler.Run();
 

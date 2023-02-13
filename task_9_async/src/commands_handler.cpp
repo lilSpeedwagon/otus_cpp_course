@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 
-namespace bulk {
+namespace async {
 
 const std::string CommandsHandler::kBlockBegin = "{";
 const std::string CommandsHandler::kBlockEnd = "}";
@@ -11,11 +11,11 @@ const std::string CommandsHandler::kBlockEnd = "}";
 CommandsHandler::CommandsHandler(
     std::istream& input_stream,
     std::ostream& output_stream,
-    std::shared_ptr<BulkContainer<command_type>> commands_contaier,
-    std::shared_ptr<BulkContainer<command_type>> block_contaier)
+    std::shared_ptr<containers::BulkContainer<command_type>> commands_contaier,
+    std::shared_ptr<containers::BulkContainer<command_type>> block_contaier)
     : dynamic_blocks_opened_(0), 
-        input_stream_(input_stream), output_stream_(output_stream),
-        commands_contaier_(commands_contaier), block_contaier_(block_contaier) {}
+      input_stream_(input_stream), output_stream_(output_stream),
+      commands_contaier_(commands_contaier), block_contaier_(block_contaier) {}
 
 CommandsHandler::~CommandsHandler() {}
 
@@ -54,7 +54,7 @@ bool CommandsHandler::IsDynamicBlock() const {
     return dynamic_blocks_opened_ > 0;
 }
 
-std::shared_ptr<BulkContainer<CommandsHandler::command_type>>
+std::shared_ptr<containers::BulkContainer<CommandsHandler::command_type>>
     CommandsHandler::GetActiveContainer() const {
     return IsDynamicBlock() ? block_contaier_ : commands_contaier_;
 }
@@ -78,4 +78,4 @@ void CommandsHandler::WriteCommands(const std::vector<command_type>& commands) c
     output_stream_ << '\n';
 }
 
-} // namespace bulk
+} // namespace async

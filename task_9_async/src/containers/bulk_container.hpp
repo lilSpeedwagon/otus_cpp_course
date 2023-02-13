@@ -3,7 +3,7 @@
 #include <vector>
 
 
-namespace bulk {
+namespace async::containers {
 
 /// @brief Bulk container interface. Provides base functions to store
 /// bulk items for the further handling.
@@ -31,4 +31,4 @@ public:
     virtual bool IsFull() const = 0;
 };
 
-} // namespace bulk
+} // namespace async::containers

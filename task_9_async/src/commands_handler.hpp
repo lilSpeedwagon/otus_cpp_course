@@ -8,7 +8,7 @@
 #include <containers/bulk_container.hpp>
 
 
-namespace bulk {
+namespace async {
 
 /// @brief Bulk commands interpeteur.
 /// Operates with commands blocks of static and dynamic sized.
@@ -19,8 +19,8 @@ public:
     CommandsHandler(
         std::istream& input_stream,
         std::ostream& output_stream,
-        std::shared_ptr<BulkContainer<command_type>> commands_contaier,
-        std::shared_ptr<BulkContainer<command_type>> block_contaier);
+        std::shared_ptr<containers::BulkContainer<command_type>> commands_contaier,
+        std::shared_ptr<containers::BulkContainer<command_type>> block_contaier);
     ~CommandsHandler();
 
     /// @brief Runs commands I/O loop for bulk handling.
@@ -32,7 +32,7 @@ private:
 
     bool IsDynamicBlock() const;
 
-    std::shared_ptr<BulkContainer<command_type>> GetActiveContainer() const;
+    std::shared_ptr<containers::BulkContainer<command_type>> GetActiveContainer() const;
 
     void FlushCommands();
 
@@ -41,8 +41,8 @@ private:
     size_t dynamic_blocks_opened_;
     std::istream& input_stream_;
     std::ostream& output_stream_;
-    std::shared_ptr<BulkContainer<command_type>> commands_contaier_;
-    std::shared_ptr<BulkContainer<command_type>> block_contaier_;
+    std::shared_ptr<containers::BulkContainer<command_type>> commands_contaier_;
+    std::shared_ptr<containers::BulkContainer<command_type>> block_contaier_;
 };
 
-} // namespace bulk
+} // namespace async
