@@ -10,14 +10,21 @@ const std::string CommandsHandler::kBlockEnd = "}";
 
 CommandsHandler::CommandsHandler(
     std::istream& input_stream,
-    std::ostream& output_stream,
     std::shared_ptr<containers::BulkContainer<command_type>> commands_contaier,
     std::shared_ptr<containers::BulkContainer<command_type>> block_contaier)
-    : dynamic_blocks_opened_(0), 
-      input_stream_(input_stream), output_stream_(output_stream),
-      commands_contaier_(commands_contaier), block_contaier_(block_contaier) {}
+    : dynamic_blocks_opened_(0), input_stream_(input_stream),
+      commands_contaier_(commands_contaier), block_contaier_(block_contaier),
+      sink_map_() {}
 
 CommandsHandler::~CommandsHandler() {}
+
+void CommandsHandler::AddSink(const std::string& sink_name, sink_ptr_type sink_ptr) {
+    sink_map_[sink_name] = sink_ptr;
+}
+
+void CommandsHandler::RemoveSink(const std::string& sink_name) {
+    sink_map_.erase(sink_name);
+}
 
 void CommandsHandler::Run() {
     std::string command;
@@ -50,6 +57,7 @@ void CommandsHandler::Run() {
         }
     }
 }
+
 bool CommandsHandler::IsDynamicBlock() const {
     return dynamic_blocks_opened_ > 0;
 }
@@ -66,16 +74,11 @@ void CommandsHandler::FlushCommands() {
 }
 
 void CommandsHandler::WriteCommands(const std::vector<command_type>& commands) const {
-    bool is_first = true;
-    for (const auto& c : commands) {
-        if (is_first) {
-            is_first = false;
-        } else {
-            output_stream_ << ',';
+    for (const auto& command : commands) {
+        for (auto [_, sink_ptr] : sink_map_) {
+            sink_ptr->Push(command);
         }
-        output_stream_ << c;
     }
-    output_stream_ << '\n';
 }
 
 } // namespace async

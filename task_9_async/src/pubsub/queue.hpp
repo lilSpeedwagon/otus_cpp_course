@@ -7,17 +7,17 @@
 #include <unordered_map>
 
 
-namespace async::queue {
+namespace async::pubsub {
 
 /// @brief Queue implementing publisher-subscriber patter.
 /// Some threads may subscribe and wait for new items in the queue.
 /// Other threads may push new items to the queue.
 /// @tparam T item type
 template<typename T>
-class PubSubQueue {
+class Queue {
 public:
-    PubSubQueue() = default;
-    ~PubSubQueue() = default;
+    Queue() = default;
+    ~Queue() = default;
 
     /// @brief Push a new item to the queue. 
     /// May be blocked on mutex while somebody else read/write to the queue
@@ -52,4 +52,4 @@ private:
     std::queue<T> queue_;
 };
 
-} // namespace async::queue
+} // namespace async::pubsub
