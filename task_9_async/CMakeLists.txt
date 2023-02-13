@@ -8,6 +8,7 @@ project(async VERSION ${PROJECT_VERSION})
 add_executable(${PROJECT_NAME}
     src/commands_handler.cpp
     src/main.cpp
+    src/workers/log.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
