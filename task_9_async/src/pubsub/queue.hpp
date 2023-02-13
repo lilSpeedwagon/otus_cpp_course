@@ -23,7 +23,7 @@ public:
     /// May be blocked on mutex while somebody else read/write to the queue
     /// @param item new item
     void Push(const T& item) {
-        std::scoped_lock lock(context.mutex);
+        std::scoped_lock lock(mutex_);
         queue_.push(item);
         cv_.notify_one();
     }
@@ -36,17 +36,23 @@ public:
         { 
             std::scoped_lock scope(mutex_);
             if (!queue_.empty()) {
-                return queue_.pop();
+                return Pop();
             }
         }
 
         // else wait for new items
         std::unique_lock lock(mutex_);
-        cv_.wait(lock, [&queue_]() { return !queue_.empty(); });
-        return queue_.pop();
+        cv_.wait(lock, [&queue = this->queue_]() { return !queue.empty(); });
+        return Pop();
     }
 
 private:
+    T Pop() {
+        auto item = queue_.front();
+        queue_.pop();
+        return item;
+    }
+
     std::mutex mutex_;
     std::condition_variable cv_;
     std::queue<T> queue_;
