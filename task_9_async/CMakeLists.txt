@@ -9,8 +9,7 @@ add_executable(${PROJECT_NAME}
     src/commands_handler.cpp
     src/main.cpp
     src/utils/time.cpp
-    src/workers/file.cpp
-    src/workers/log.cpp
+    src/workers/stream.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
