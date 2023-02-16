@@ -8,6 +8,8 @@ project(async VERSION ${PROJECT_VERSION})
 add_executable(${PROJECT_NAME}
     src/commands_handler.cpp
     src/main.cpp
+    src/utils/time.cpp
+    src/workers/file.cpp
     src/workers/log.cpp
 )
 
