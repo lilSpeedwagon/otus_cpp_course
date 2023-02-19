@@ -6,7 +6,11 @@ set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 project(async VERSION ${PROJECT_VERSION})
 
 add_executable(${PROJECT_NAME}
-    src/main.cpp
+    main.cpp
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    lib_async/include
 )
 
 add_subdirectory(lib_async)
