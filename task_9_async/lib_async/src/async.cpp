@@ -16,19 +16,12 @@ handle_t Connect(size_t block_size) {
 
 size_t Receive(handle_t handle, const char *data, size_t size) {
     auto& context_holder = context::ContextHolder::GetInstance();
-    auto context_opt = context_holder.GetContext(handle);
-    if (!context_opt.has_value()) {
+    auto context_ptr = context_holder.GetContext(handle);
+    if (context_ptr.expired()) {
         return 0;
     }
 
-    auto& context = context_opt.value();
-    command_t command(data, size);
-    context.commands.emplace_back(std::move(command));
-    if (context.commands.size() >= context.block_size) {
-        auto sinks = sinks::SinksHolder::GetInstance();
-        sinks.Flush(context.commands);
-        context.commands.clear();
-    }
+    context_ptr.lock()->AddCommands(data, size);
     return 1;
 }
 

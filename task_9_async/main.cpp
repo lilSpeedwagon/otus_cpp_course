@@ -15,6 +15,7 @@ int main() {
     async::Disconnect(h);
     async::Disconnect(h2);
 
+    // wait until all threads complete their work
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     return 0;

@@ -13,12 +13,21 @@ namespace async::sinks {
 
 namespace {
 
-void stream_worker(std::shared_ptr<pubsub::Queue<std::string>> sink_ptr,
-                   std::ostream& stream) {
+void StreamWorker(std::shared_ptr<pubsub::Queue<std::string>> sink_ptr,
+                  std::ostream& stream) {
     for (;;) {
         auto command = sink_ptr->PopNext();
         stream << command << std::endl;
     }
+}
+
+void FileStreamWorker(std::shared_ptr<pubsub::Queue<std::string>> sink_ptr) {
+    std::ofstream file(utils::GenerateFileName(), std::ios_base::out);
+    StreamWorker(sink_ptr, file);
+}
+
+void LogStreamWorker(std::shared_ptr<pubsub::Queue<std::string>> sink_ptr) {
+    StreamWorker(sink_ptr, std::cout);
 }
 
 auto Init() {
@@ -28,14 +37,12 @@ auto Init() {
     auto file_sink_ptr = std::make_shared<sink_t>();
     auto log_sink_ptr = std::make_shared<sink_t>();
 
-    // setup workers to consume commands from the sinks
-    // commands from file sink are distributed between two file workers
-    // all log commands are handled by log worker
-    std::ofstream file1(utils::GenerateFileName(), std::ios_base::out);
-    std::ofstream file2(utils::GenerateFileName(), std::ios_base::out);
-    std::thread file_worker_thread1(stream_worker, file_sink_ptr, std::ref(file1));
-    std::thread file_worker_thread2(stream_worker, file_sink_ptr, std::ref(file2));
-    std::thread log_worker_thread(stream_worker, log_sink_ptr, std::ref(std::cout));
+    // Setup workers to consume commands from the sinks.
+    // Commands from file sink are distributed between two file workers
+    // Commands from log sink are handled by a single log worker.
+    std::thread file_worker_thread1(FileStreamWorker, file_sink_ptr);
+    std::thread file_worker_thread2(FileStreamWorker, file_sink_ptr);
+    std::thread log_worker_thread(LogStreamWorker, log_sink_ptr);
     file_worker_thread1.detach();
     file_worker_thread2.detach();
     log_worker_thread.detach();
@@ -68,6 +75,5 @@ void SinksHolder::Flush(const std::list<command_t>& commands) {
         sink->Push(commands);
     }
 }
-
 
 } // namespace async::sinks
