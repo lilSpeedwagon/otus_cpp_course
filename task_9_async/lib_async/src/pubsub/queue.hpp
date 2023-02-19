@@ -1,6 +1,7 @@
 #pragma once
 
 #include <condition_variable>
+#include <list>
 #include <mutex>
 #include <stdexcept>
 #include <queue>
@@ -25,6 +26,17 @@ public:
     void Push(const T& item) {
         std::scoped_lock lock(mutex_);
         queue_.push(item);
+        cv_.notify_one();
+    }
+
+    /// @brief Push a queue of items to the queue. 
+    /// May be blocked on mutex while somebody else read/write to the queue
+    /// @param item new item
+    void Push(const std::list<T>& items) {
+        std::scoped_lock lock(mutex_);
+        for (const auto& item : items) {
+            queue_.push(item);
+        }
         cv_.notify_one();
     }
 

@@ -16,9 +16,12 @@ ContextHolder& ContextHolder::GetInstance() {
     return instance;
 }
 
-handle_t ContextHolder::CreateContext() {
+handle_t ContextHolder::CreateContext(size_t block_size) {
     const auto handle = reinterpret_cast<handle_t>(context_counter_++);
-    context_map_[handle] = {};
+    context_map_[handle] = Context{
+        block_size, // block_size
+        {},         // queue
+    };
     return handle;
 }
 

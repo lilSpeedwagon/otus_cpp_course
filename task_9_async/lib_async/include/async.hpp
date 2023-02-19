@@ -1,14 +1,16 @@
 #pragma once
 
+#include <stddef.h>
+
 #include <handle.hpp>
 
 
 namespace async {
 
 /// @brief Create new context for commands.
-/// @param bulk size of a commands block
+/// @param block_size size of a commands block
 /// @return context handler
-handle_t Connect(size_t bulk);
+handle_t Connect(size_t block_size);
 
 /// @brief Put new command to the context.
 /// @param handle context handler

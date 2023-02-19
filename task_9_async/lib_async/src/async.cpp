@@ -1,18 +1,21 @@
 #include <async.hpp>
 
-#include <context/context_holder.hpp>
+#include <future>
+
 #include <commands.hpp>
+#include <context/context_holder.hpp>
+#include <sinks/sink_holder.hpp>
 
 
 namespace async {
 
-handle_t Connect(size_t bulk) {
-    auto& context_holder = ContextQueueHolder::GetInstance();
-    return context_holder.CreateContext();
+handle_t Connect(size_t block_size) {
+    auto& context_holder = context::ContextHolder::GetInstance();
+    return context_holder.CreateContext(block_size);
 }
 
 size_t Receive(handle_t handle, const char *data, size_t size) {
-    auto& context_holder = ContextQueueHolder::GetInstance();
+    auto& context_holder = context::ContextHolder::GetInstance();
     auto context_opt = context_holder.GetContext(handle);
     if (!context_opt.has_value()) {
         return 0;
@@ -20,19 +23,17 @@ size_t Receive(handle_t handle, const char *data, size_t size) {
 
     auto& context = context_opt.value();
     command_t command(data, size);
-    context.commands.push(std::move(command)); // emplace ?
+    context.commands.emplace_back(std::move(command));
     if (context.commands.size() >= context.block_size) {
-        std::queue<command_t> queue;
-        std::swap(queue, context.queue);
-        std::async([]() {
-            // send to topic
-        });
+        auto sinks = sinks::SinksHolder::GetInstance();
+        sinks.Flush(context.commands);
+        context.commands.clear();
     }
     return 1;
 }
 
 size_t Disconnect(handle_t handle) {
-    auto& context_holder = ContextQueueHolder::GetInstance();
+    auto& context_holder = context::ContextHolder::GetInstance();
     return context_holder.RemoveContext(handle) ? 1 : 0;
 }
 

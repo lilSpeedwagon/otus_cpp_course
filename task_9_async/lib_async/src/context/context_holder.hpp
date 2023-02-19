@@ -1,8 +1,8 @@
 #pragma once
 
+#include <list>
 #include <optional>
 #include <unordered_map>
-#include <queue>
 
 #include <handle.hpp>
 #include <commands.hpp>
@@ -12,14 +12,14 @@ namespace async::context {
 
 struct Context {
     size_t block_size;
-    std::queue<command_t> commands;
+    std::list<command_t> commands;
 };
 
 class ContextHolder {
 public:
     static ContextHolder& GetInstance();
 
-    handle_t CreateContext();
+    handle_t CreateContext(size_t block_size);
 
     std::optional<Context> GetContext(handle_t context);
 
