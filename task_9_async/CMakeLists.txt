@@ -6,19 +6,18 @@ set(PROJECT_VERSION 0.0.${PATCH_VERSION})
 project(async VERSION ${PROJECT_VERSION})
 
 add_executable(${PROJECT_NAME}
-    src/commands_handler.cpp
     src/main.cpp
-    src/utils/time.cpp
-    src/workers/stream.cpp
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-    src/
+add_subdirectory(lib_async)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    lib_async
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED ON
+CXX_STANDARD 17
+CXX_STANDARD_REQUIRED ON
 )
 
 if (MSVC)
