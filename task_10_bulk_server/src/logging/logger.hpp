@@ -36,15 +36,14 @@ public:
     LogHolder(LogLevel level);
     ~LogHolder();
 
-    template<typename T>
-    LogHolder& operator<<(const T& msg) {
-        log_entry_.message += msg;
-        return *this;
-    }
-
     template<typename T, typename std::enable_if<std::is_arithmetic_v<T>, bool>::type = true>
     LogHolder& operator<<(const T& val) {
         log_entry_.message += std::to_string(val);
+        return *this;
+    }
+
+    LogHolder& operator<<(const std::string& msg) {
+        log_entry_.message += msg;
         return *this;
     }
 

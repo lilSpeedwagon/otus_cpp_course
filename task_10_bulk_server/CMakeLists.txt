@@ -11,6 +11,8 @@ find_package(Boost REQUIRED)
 add_executable(${PROJECT_NAME}
     src/logging/logger.cpp
     src/main.cpp
+    src/tcp/tcp_session.cpp
+    src/tcp/tcp_server.cpp
     src/utils/time.cpp
 )
 
