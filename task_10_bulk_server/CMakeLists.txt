@@ -6,8 +6,12 @@ set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 project(bulk_server VERSION ${PROJECT_VERSION})
 
+find_package(Boost REQUIRED)
+
 add_executable(${PROJECT_NAME}
+    src/logging/logger.cpp
     src/main.cpp
+    src/utils/time.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
