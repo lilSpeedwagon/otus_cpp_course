@@ -10,9 +10,12 @@ find_package(Boost REQUIRED)
 
 add_executable(${PROJECT_NAME}
     src/logging/logger.cpp
+    src/handlers/handle_commands.cpp
     src/main.cpp
     src/tcp/tcp_session.cpp
     src/tcp/tcp_server.cpp
+    src/sinks/sink_holder.cpp
+    src/utils/file.cpp
     src/utils/time.cpp
 )
 
