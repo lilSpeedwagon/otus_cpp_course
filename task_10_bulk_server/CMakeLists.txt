@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME}
     src/sinks/sink_holder.cpp
     src/utils/file.cpp
     src/utils/time.cpp
+    src/workers/workers.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

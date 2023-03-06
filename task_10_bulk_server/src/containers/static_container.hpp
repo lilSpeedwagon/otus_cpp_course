@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdexcept>
-#include <vector>
+#include <list>
 
 #include <containers/bulk_container.hpp>
 
