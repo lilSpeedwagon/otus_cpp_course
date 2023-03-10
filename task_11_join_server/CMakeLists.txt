@@ -7,6 +7,14 @@ project(join_server VERSION ${PROJECT_VERSION})
 
 add_executable(${PROJECT_NAME}
     main.cpp
+    src/logging/logger.cpp
+    src/tcp/server.cpp
+    src/tcp/session.cpp
+    src/utils/time.cpp
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    src
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
