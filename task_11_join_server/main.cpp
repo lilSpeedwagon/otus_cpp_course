@@ -10,8 +10,10 @@ std::string callback(std::string data) {
 }
 
 int main() {
+    constexpr const uint16_t kPort = 8080;
+
     boost::asio::io_context context;
-    join_server::tcp::TcpServer server(context, 5000);
+    join_server::tcp::TcpServer server(context, kPort);
     server.RunAsync(callback);
     context.run();
 
