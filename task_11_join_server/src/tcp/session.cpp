@@ -22,7 +22,7 @@ void TcpSession::AsyncRead() {
 }
 
 void TcpSession::OnRead(boost::system::error_code error_code,
-                        std::size_t bytes_transferred) {
+                        std::size_t /*bytes_transferred*/) {
     if (error_code) {   
         LOG_ERROR() << "TcpSession read error: " << error_code.message();
         return;
