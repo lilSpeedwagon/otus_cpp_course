@@ -11,9 +11,11 @@ struct TableColumnSchema {
     std::string type;
 };
 
+using ColumnsMeta = std::list<TableColumnSchema>;
+
 struct TableSchema {
     std::string name;
-    std::list<TableColumnSchema> columns;
+    ColumnsMeta columns;
 };
 
 class BaseModel {};

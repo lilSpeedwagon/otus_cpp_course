@@ -1,14 +1,47 @@
 #include <iostream>
 
 #include <boost/asio.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <db/init.hpp>
+#include <handlers/insert.hpp>
 #include <tcp/server.hpp>
 #include <utils/env.hpp>
 
 
-std::string callback(std::string data) {
-    return data;
+std::string HandleCommands(const std::string& data) {
+    if (data.empty()) {
+        throw std::runtime_error("Empty input is not allowed");
+    }
+    
+    std::vector<std::string> tokens;
+    boost::split(tokens, data, boost::is_any_of(" "));
+    auto command = tokens.front();
+
+    if (command == "INSERT") {
+        if (tokens.size() != 4) {
+            throw std::runtime_error("Invalid arguments number");
+        }
+
+        const auto table_name = tokens[1];
+        const auto id = tokens[2];
+        const auto name = tokens[3];
+        return join_server::handlers::HandleInsert(table_name, id, name);
+    }
+
+    throw std::runtime_error("Unknown command");
+}
+
+std::string HandleRequest(std::string data) {
+    LOG_INFO() << "Request: " << data;
+    std::string response;
+    try {
+        response = HandleCommands(data);
+    } catch (const std::exception& ex) {
+        response = std::string("ERR ") + ex.what();
+    }
+    LOG_INFO() << "Response: " << response;
+    return response;
 }
 
 int main() {
@@ -18,7 +51,7 @@ int main() {
 
     boost::asio::io_context context;
     join_server::tcp::TcpServer server(context, kPort);
-    server.RunAsync(callback);
+    server.RunAsync(HandleRequest);
     context.run();
 
     return 0;

@@ -32,7 +32,12 @@ void TcpSession::OnRead(boost::system::error_code error_code,
     std::istream stream(&streambuf_);
     std::getline(stream, data);
 
-    auto result = on_request_ready_(data);
+    std::string result;
+    try {
+        result = on_request_ready_(data);
+    } catch (const std::exception& ex) {
+        LOG_ERROR() << "Error during request handling: " << ex.what();
+    }
     AsyncWrite(result);
 }
 

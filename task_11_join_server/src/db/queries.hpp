@@ -44,7 +44,7 @@ std::string InsertQuery(const models::TableSchema& meta, const std::list<std::st
         } else {
             ss << ",";
         }
-        ss << v;
+        ss << '"' << v << '"';
     }
     ss << ");";
     return ss.str();
