@@ -1,9 +1,12 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <boost/noncopyable.hpp>
 #include "sqlite3.h"
+
+#include <db/results.hpp>
 
 
 namespace join_server::db {
@@ -14,6 +17,8 @@ public:
     ~Session();
 
     void ExecuteStatement(const std::string& statement);
+
+    std::vector<Row> ExecuteStatementWithResult(const std::string& statement);
 
 private:
     sqlite3* handle_;

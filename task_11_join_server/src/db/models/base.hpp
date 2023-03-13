@@ -2,6 +2,7 @@
 
 #include <list>
 #include <string>
+#include <vector>
 
 
 namespace join_server::db::models {
@@ -11,7 +12,7 @@ struct TableColumnSchema {
     std::string type;
 };
 
-using ColumnsMeta = std::list<TableColumnSchema>;
+using ColumnsMeta = std::vector<TableColumnSchema>;
 
 struct TableSchema {
     std::string name;

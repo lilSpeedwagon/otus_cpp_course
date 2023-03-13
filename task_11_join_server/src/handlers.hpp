@@ -9,4 +9,8 @@ std::string HandleInsert(const std::string& table_name, const std::string& id, c
 
 std::string HandleTruncate(const std::string& table_name);
 
+std::string HandleIntersetion();
+
+std::string HandleDifference();
+
 } // namespace join_server::handlers

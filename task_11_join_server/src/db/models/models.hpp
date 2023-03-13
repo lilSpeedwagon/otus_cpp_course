@@ -7,7 +7,7 @@
 
 namespace join_server::db::models {
 
-static const std::list<TableColumnSchema> kColumnsMetadata = {
+static const ColumnsMeta kColumnsMetadata = {
     {"id", "int"},
     {"name", "varchar"}
 };

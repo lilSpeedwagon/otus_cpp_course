@@ -34,7 +34,18 @@ std::string HandleCommands(const std::string& data) {
 
         const auto table_name = tokens[1];
         return join_server::handlers::HandleTruncate(table_name);
+    } else if (command == "INTERSECT") {
+        if (tokens.size() != 1) {
+            throw std::runtime_error("Invalid arguments number");
+        }
+        return join_server::handlers::HandleIntersetion();
+    } else if (command == "SYMMETRIC_DIFFERENCE") {
+        if (tokens.size() != 1) {
+            throw std::runtime_error("Invalid arguments number");
+        }
+        return join_server::handlers::HandleDifference();
     }
+
 
     throw std::runtime_error("Unknown command");
 }
