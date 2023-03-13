@@ -4,7 +4,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <db/init.hpp>
-#include <handlers/insert.hpp>
+#include <handlers.hpp>
 #include <tcp/server.hpp>
 #include <utils/env.hpp>
 
@@ -27,6 +27,13 @@ std::string HandleCommands(const std::string& data) {
         const auto id = tokens[2];
         const auto name = tokens[3];
         return join_server::handlers::HandleInsert(table_name, id, name);
+    } else if (command == "TRUNCATE") {
+        if (tokens.size() != 2) {
+            throw std::runtime_error("Invalid arguments number");
+        }
+
+        const auto table_name = tokens[1];
+        return join_server::handlers::HandleTruncate(table_name);
     }
 
     throw std::runtime_error("Unknown command");

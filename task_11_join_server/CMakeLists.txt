@@ -14,6 +14,9 @@ endif()
 
 add_executable(${PROJECT_NAME}
     main.cpp
+    src/db/session.cpp
+    src/db/queries.cpp
+    src/handlers.cpp
     src/logging/logger.cpp
     src/tcp/server.cpp
     src/tcp/session.cpp
