@@ -5,22 +5,21 @@
 
 namespace join_server::db {
 
+/// @brief sqlite3 error message wrapper for proper memory cleanup.
+/// Use 'GetBufferPtr()' to obtain a buffer pointer and pass it to 
+/// sqlite3 functions such as 'sqlite3_exec()'.
 class Sql3Error {
 public:
-    Sql3Error() {}
-    ~Sql3Error() {
-        if (buffer_ != nullptr) {
-            sqlite3_free(buffer_);
-        }
-    }
+    Sql3Error() = default;
+    ~Sql3Error();
 
-    const char* GetMsg() const {
-        return buffer_;
-    }
+    /// @brief Get error message.
+    /// @return error message string
+    const char* GetMsg() const;
 
-    char** GetBufferPtr() {
-        return &buffer_;
-    }
+    /// @brief Get error message buffer pointer.
+    /// @return pointer to the internal buffer
+    char** GetBufferPtr();
 
 private:
     char* buffer_;

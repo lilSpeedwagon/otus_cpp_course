@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include <db/models/base.hpp>
 
 
@@ -20,16 +18,6 @@ static const auto kAMetadata = TableSchema{
 static const auto kBMetadata = TableSchema{
     "B",                // name
     kColumnsMetadata,   // columns
-};
-
-struct A : public BaseModel {
-    int id;
-    std::string name;
-};
-
-struct B : public BaseModel {
-    int id;
-    std::string name;
 };
 
 } // namespace join_server::db::models

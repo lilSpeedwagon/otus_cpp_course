@@ -17,6 +17,8 @@ class TcpSession : public std::enable_shared_from_this<TcpSession>
 public:
     explicit TcpSession(boost::asio::ip::tcp::socket&& socket,
                         const DataHandler& on_request_ready);
+
+    /// @brief Async wait for the next TCP connection
     void AsyncRead();
 
 private:

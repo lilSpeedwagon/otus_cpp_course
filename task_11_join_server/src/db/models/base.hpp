@@ -7,6 +7,7 @@
 
 namespace join_server::db::models {
 
+/// @brief SQL table column metadata
 struct TableColumnSchema {
     std::string name;
     std::string type;
@@ -14,11 +15,10 @@ struct TableColumnSchema {
 
 using ColumnsMeta = std::vector<TableColumnSchema>;
 
+/// @brief SQL table metadata
 struct TableSchema {
     std::string name;
     ColumnsMeta columns;
 };
-
-class BaseModel {};
 
 } // namespace join_server::db::models

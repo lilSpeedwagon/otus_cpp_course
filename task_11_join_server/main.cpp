@@ -4,9 +4,9 @@
 #include <boost/algorithm/string.hpp>
 
 #include <db/init.hpp>
+#include <logging/logger.hpp>
 #include <handlers.hpp>
 #include <tcp/server.hpp>
-#include <utils/env.hpp>
 
 
 std::string HandleCommands(const std::string& data) {
@@ -38,14 +38,15 @@ std::string HandleCommands(const std::string& data) {
         if (tokens.size() != 1) {
             throw std::runtime_error("Invalid arguments number");
         }
+
         return join_server::handlers::HandleIntersetion();
     } else if (command == "SYMMETRIC_DIFFERENCE") {
         if (tokens.size() != 1) {
             throw std::runtime_error("Invalid arguments number");
         }
+
         return join_server::handlers::HandleDifference();
     }
-
 
     throw std::runtime_error("Unknown command");
 }
@@ -62,13 +63,19 @@ std::string HandleRequest(std::string data) {
     return response;
 }
 
-int main() {
-    constexpr const uint16_t kPort = 8080;
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        std::cout << "invalid args count\n";
+        std::cout << "usage: join_server <port>\n";
+        return 1;
+    }
+
+    const auto port = static_cast<uint16_t>(std::atoi(argv[1]));
 
     join_server::db::Init();
 
     boost::asio::io_context context;
-    join_server::tcp::TcpServer server(context, kPort);
+    join_server::tcp::TcpServer server(context, port);
     server.RunAsync(HandleRequest);
     context.run();
 

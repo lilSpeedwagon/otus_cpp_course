@@ -14,6 +14,8 @@ endif()
 
 add_executable(${PROJECT_NAME}
     main.cpp
+    src/db/errors.cpp
+    src/db/init.cpp
     src/db/session.cpp
     src/db/queries.cpp
     src/handlers.cpp
@@ -21,6 +23,7 @@ add_executable(${PROJECT_NAME}
     src/tcp/server.cpp
     src/tcp/session.cpp
     src/utils/time.cpp
+
     ${sqlite3_SOURCE_DIR}/sqlite3.c
 )
 

@@ -7,6 +7,7 @@
 
 namespace join_server::db {
 
+/// @brief A single column of SQL resulting row 
 struct Column {
     std::string name;
     std::optional<std::string> value;
