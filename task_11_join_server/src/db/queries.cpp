@@ -81,33 +81,32 @@ std::string JoinExcludeQuery(const db::models::TableSchema& meta_lhs,
                              const std::list<std::string>& lhs_fields,
                              const std::list<std::string>& rhs_fields) {
     std::stringstream ss;
+
+    // SELECT ... FROM lhs WHERE on_lhs NOT IN rhs
     ss << "SELECT lhs." << on_lhs;
     for (const auto& c : lhs_fields) {
         ss << ", " << "lhs." << c << " AS " << meta_lhs.name << "_" << c;
     }
     for (const auto& c : rhs_fields) {
-        ss << ", " << "rhs." << c  << " AS " << meta_rhs.name << "_" << c;
+        ss << ", " << "\"\"" << " AS " << meta_rhs.name << "_" << c; // empty values
     }
     ss << " FROM " << meta_lhs.name << " AS lhs";
-    ss << " LEFT JOIN " << meta_rhs.name << " AS rhs";
-    ss << " ON lhs." << on_lhs << " = rhs." << on_rhs;
-    ss << " WHERE rhs." << on_rhs << " IS null";
+    ss << " WHERE lhs." << on_lhs << " NOT IN ";
+    ss << "(SELECT " << on_rhs << " FROM " << meta_rhs.name << ")";
 
     ss << " UNION ";
 
+    // SELECT ... FROM rhs WHERE on_rhs NOT IN lhs
     ss << "SELECT rhs." << on_rhs;
     for (const auto& c : lhs_fields) {
-        ss << ", " << "lhs." << c << " AS " << meta_lhs.name << "_" << c;
+        ss << ", " << "\"\"" << " AS " << meta_lhs.name << "_" << c;
     }
     for (const auto& c : rhs_fields) {
-        ss << ", " << "rhs." << c  << " AS " << meta_rhs.name << "_" << c;
+        ss << ", " << "rhs." << c << " AS " << meta_rhs.name << "_" << c; // empty values
     }
-    ss << " FROM " << meta_lhs.name << " AS lhs";
-    ss << " RIGHT JOIN " << meta_rhs.name << " AS rhs";
-    ss << " ON lhs." << on_lhs << " = rhs." << on_rhs;
-    ss << " WHERE lhs." << on_lhs << " IS null";
-
-    // TODO ????
+    ss << " FROM " << meta_rhs.name << " AS rhs";
+    ss << " WHERE rhs." << on_rhs << " NOT IN ";
+    ss << "(SELECT " << on_lhs << " FROM " << meta_lhs.name << ");";
 
     return ss.str(); 
 }
