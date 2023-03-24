@@ -1,0 +1,4 @@
+<map id="mvc::documents::Storage" name="mvc::documents::Storage">
+<area shape="rect" id="node1" title="Abstract storage for vector documents." alt="" coords="16,5,184,31"/>
+<area shape="rect" id="node2" href="$classmvc_1_1documents_1_1FileStorage.html" title="Documents storage based on the filesystem. File system is mocked with std::unordered_map for testing ..." alt="" coords="5,79,195,104"/>
+</map>

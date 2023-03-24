@@ -1,0 +1,6 @@
+<map id="mvc::shapes::Shape" name="mvc::shapes::Shape">
+<area shape="rect" id="node1" title="Abstract vector shape." alt="" coords="174,5,313,31"/>
+<area shape="rect" id="node2" href="$classmvc_1_1shapes_1_1Circle.html" title="Circle shape." alt="" coords="5,79,140,104"/>
+<area shape="rect" id="node3" href="$classmvc_1_1shapes_1_1Rectangle.html" title="Rectangle shape." alt="" coords="164,79,323,104"/>
+<area shape="rect" id="node4" href="$classmvc_1_1shapes_1_1Triangle.html" title="Triangle shape." alt="" coords="347,79,494,104"/>
+</map>

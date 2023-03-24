@@ -1,0 +1,4 @@
+<map id="join_server::tcp::TcpServer" name="join_server::tcp::TcpServer">
+<area shape="rect" id="node1" title="Simple async TCP server based on boost/asio." alt="" coords="5,79,180,104"/>
+<area shape="rect" id="node2" title=" " alt="" coords="27,5,159,31"/>
+</map>

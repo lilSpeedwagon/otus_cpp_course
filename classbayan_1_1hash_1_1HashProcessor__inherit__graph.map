@@ -1,0 +1,5 @@
+<map id="bayan::hash::HashProcessor" name="bayan::hash::HashProcessor">
+<area shape="rect" id="node1" title="Hash processor interface." alt="" coords="100,5,287,31"/>
+<area shape="rect" id="node2" href="$classbayan_1_1hash_1_1DefaultHashProcessor.html" title="Default STL implementation of hash processing." alt="" coords="5,79,173,119"/>
+<area shape="rect" id="node3" href="$classbayan_1_1hash_1_1RsHashProcessor.html" title="Robert Sedgwick&#39;s simple hash algorithm implementation." alt="" coords="197,86,400,111"/>
+</map>

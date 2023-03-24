@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classasync_1_1containers_1_1BulkContainer.html" title="Bulk container interface. Provides base functions to store bulk items for the further handling." alt="" coords="5,37,139,77"/>
+<area shape="rect" id="node2" href="$classasync_1_1containers_1_1DynamicBulkContainer.html" title=" " alt="" coords="187,5,369,45"/>
+<area shape="rect" id="node3" href="$classasync_1_1containers_1_1StaticBulkContainer.html" title=" " alt="" coords="195,69,361,109"/>
+</map>

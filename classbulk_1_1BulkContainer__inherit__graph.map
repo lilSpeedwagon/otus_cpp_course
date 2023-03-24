@@ -1,0 +1,5 @@
+<map id="bulk::BulkContainer&lt; T &gt;" name="bulk::BulkContainer&lt; T &gt;">
+<area shape="rect" id="node1" title="Bulk container interface. Provides base functions to store bulk items for the further handling." alt="" coords="145,5,308,31"/>
+<area shape="rect" id="node2" href="$classbulk_1_1DynamicBulkContainer.html" title=" " alt="" coords="5,79,219,104"/>
+<area shape="rect" id="node3" href="$classbulk_1_1StaticBulkContainer.html" title=" " alt="" coords="243,79,440,104"/>
+</map>

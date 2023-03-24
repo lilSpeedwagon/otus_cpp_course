@@ -1,0 +1,4 @@
+<map id="mvc::render::DisplayRenderEngine" name="mvc::render::DisplayRenderEngine">
+<area shape="rect" id="node1" title="Engine for rendering shapes to the display. Singleton class." alt="" coords="5,79,184,119"/>
+<area shape="rect" id="node2" title=" " alt="" coords="29,5,161,31"/>
+</map>
