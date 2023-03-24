@@ -25,10 +25,10 @@ std::vector<U> HandleInParallel(std::vector<T>&& items, std::function<U(T)> hand
     for (const auto& item : items) {
         result.emplace_back(U());
         threads.emplace_back(
-            [result& = std::ref(result.back()), handler_func] (T&& item) {
-                result = handler_func(std::forward(item));
+            [&result = result.back(), handler_func] (T&& item) {
+                result = handler_func(std::move(item));
             }, 
-            std::forward(item)
+            std::move(item)
         );
     }
 
